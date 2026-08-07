@@ -61,6 +61,7 @@ model User {
   password     String // bcrypt hash, never the plaintext
   phone        String?
   organization String?
+  addresses Address[]
   role         Role     @default(USER)
   orders       Order[]
   createdAt    DateTime @default(now())
@@ -89,6 +90,27 @@ model Product {
   updatedAt  DateTime    @updatedAt
 }
 
+model Address {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName  String
+  fullAddress String
+  city      String
+  state     String
+  postalCode String
+  country   String   @default("India")
+
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
 model Order {
   id          String @id @default(cuid())
   orderNumber String @unique
@@ -110,11 +132,13 @@ model Order {
   items OrderItem[]
   //address imp
 
-  // Snapshot of where the order goes, taken at checkout — a JSON blob rather
-  // than a row in its own table, so a user editing a saved address later can
-  // never rewrite the history of where a past order was actually sent.
-  billingAddress  Json // required for every order
-  shippingAddress Json? // only present when the cart contains hardware
+   // Mandatory for every order.
+  billingAddressId String
+  billingAddress   Address @relation("BillingAddress",fields: [billingAddressId],references: [id])
+
+  // Required only when the cart contains physical hardware.
+  shippingAddressId String?
+  shippingAddress   Address? @relation("ShippingAddress",fields: [shippingAddressId],references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -135,8 +159,8 @@ model OrderItem {
 //hardware
   quantity Int @default(1)
 
-  // Only set for SOFTWARE line items.
-  licenceSeats          Int?
+  // Only set for SOFTWARE line items — how many named users this licence covers.
+  seats                 Int?
   serviceDurationMonths Int?
   serviceStartsAt       DateTime?
   serviceEndsAt         DateTime?

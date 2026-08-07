@@ -1,0 +1,37 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "description": "Prisma client and schema for the NComputing store",
+  "type": "module",
+  "main": "./dist/lib/prisma.js",
+  "types": "./dist/lib/prisma.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib/prisma.d.ts",
+      "import": "./dist/lib/prisma.js",
+      "default": "./dist/lib/prisma.js"
+    }
+  },
+  "scripts": {
+    "build": "prisma generate && tsc -b",
+    "check-types": "tsc --noEmit",
+    "db:push": "prisma db push",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/pg": "^8.16.0",
+    "bcryptjs": "^2.4.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.16.3",
+    "prisma": "^7.2.0"
+  }
+}

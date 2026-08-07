@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ncomputing_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ncomputing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ncomputing}
+      POSTGRES_DB: ${POSTGRES_DB:-ncomputing}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ncomputing} -d ${POSTGRES_DB:-ncomputing}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  http_server:
+    container_name: ncomputing_http
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.http
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-ncomputing}:${POSTGRES_PASSWORD:-ncomputing}@postgres:5432/${POSTGRES_DB:-ncomputing}?schema=public"
+      JWT_SECRET: "${JWT_SECRET}"
+      CORS_ORIGIN: "https://${DOMAIN}"
+      NODE_ENV: "production"
+      RAZORPAY_KEY_ID: "${RAZORPAY_KEY_ID}"
+      RAZORPAY_KEY_SECRET: "${RAZORPAY_KEY_SECRET}"
+      RAZORPAY_WEBHOOK_SECRET: "${RAZORPAY_WEBHOOK_SECRET}"
+      RESEND_API_KEY: "${RESEND_API_KEY}"
+      MAIL_FROM: "${MAIL_FROM}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    container_name: ncomputing_web
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: "https://${DOMAIN}"
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Public URL used by the browser bundle
+      NEXT_PUBLIC_API_URL: "https://${DOMAIN}"
+      # Server-side (RSC) requests within the docker network
+      API_URL: "http://http_server:4000"
+    depends_on:
+      - http_server
+
+volumes:
+  postgres_data_prod:
