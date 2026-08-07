@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-ink antialiased;
+  }
+
+  /* Electrolize is reserved for the big hero h1s — it ships one weight, so
+     hierarchy there comes from size and tracking rather than font-weight
+     (asking the browser for bold would just synthesize a fake-bold that
+     looks worse than the regular weight). Subheadings use Roboto instead,
+     which has a real bold, so they keep normal heading-weight styling. */
+  h1 {
+    @apply font-heading font-normal;
+  }
+
+  h2,
+  h3 {
+    @apply font-semibold;
+  }
+
+  /* One visible focus style for the whole app, since this site is used on
+     shared machines in schools where keyboard navigation is common. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-600 ring-offset-2;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-brand-700;
+  }
+
+  .heading-1 {
+    @apply font-heading text-3xl tracking-tight text-ink sm:text-4xl lg:text-5xl;
+  }
+
+  .heading-2 {
+    @apply text-2xl font-semibold tracking-tight text-ink sm:text-3xl;
+  }
+
+  .lead {
+    @apply text-base leading-relaxed text-slate-600 sm:text-lg;
+  }
+
+  /* Hero section background: a soft cream-to-teal wash (the palette's warm
+     and cool ends) with a faint dot grid — a quiet nod to "many screens
+     sharing one host" without needing an actual photo. */
+  .hero-gradient {
+    background-color: theme("colors.sand");
+    background-image:
+      radial-gradient(circle at 1px 1px, rgb(0 31 63 / 8%) 1px, transparent 0),
+      linear-gradient(135deg, theme("colors.sand") 0%, theme("colors.savings.100") 45%, theme("colors.brand.100") 100%);
+    background-size:
+      24px 24px,
+      100% 100%;
+  }
+}
