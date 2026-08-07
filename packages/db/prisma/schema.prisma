@@ -57,6 +57,7 @@ model User {
   password     String // bcrypt hash, never the plaintext
   phone        String?
   organization String?
+  addresses Address[]
   role         Role     @default(USER)
   orders       Order[]
   createdAt    DateTime @default(now())
@@ -67,37 +68,52 @@ model Product {
   id             String          @id @default(cuid())
   slug           String          @unique
   name           String
-  tagline        String
-  summary        String
-  usersPerDevice Int
-  priceInPaise   Int
-  imageEmoji     String          @default("🖥️")
-  isActive       Boolean         @default(true)
-  sortOrder      Int             @default(0)
+  
+  // usersPerDevice Int
+  type ProductType 
+  price    Int
+  // imageEmoji     String          @default("🖥️")
+  isActive       Boolean         @default(true) //can we show in the website or not
+  // sortOrder      Int             @default(0)
   // Free-form marketing/spec content that only ever gets rendered, never queried.
-  highlights     String[]
-  specs          Json
-  options        ProductOption[]
+  marketing ProductMarketing?
+  // options        ProductOption[]
   orderItems     OrderItem[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
 
+model ProductMarketing {
+  id             String  @id @default(cuid())
+
+  // @unique makes this a one-to-one relationship.
+  productId      String  @unique
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  tagline        String
+  summary        String
+  highlights     String[]
+  specifications Json
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 // A configurable add-on for a product (support plan, licence pack, dongle kit).
 // Options are grouped; the UI renders one radio group per `group`.
-model ProductOption {
-  id                String  @id @default(cuid())
-  productId         String
-  product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  group             String
-  label             String
-  description       String?
-  priceDeltaInPaise Int     @default(0)
-  isDefault         Boolean @default(false)
-  sortOrder         Int     @default(0)
+// model ProductOption {
+//   id                String  @id @default(cuid())
+//   productId         String
+//   product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+//   group             String
+//   label             String
+//   description       String?
+//   priceDeltaInPaise Int     @default(0)
+//   isDefault         Boolean @default(false)
+//   sortOrder         Int     @default(0)
 
-  @@index([productId])
-}
+//   @@index([productId])
+// }
 
 model Order {
   id          String @id @default(cuid())
@@ -114,7 +130,7 @@ model Order {
   // customerEmail String
   // customerPhone String
 
-  shippingAddress Json //make a schema of address
+  // shippingAddress Json //make a schema of address
   // billingAddress  Json
 
   // subtotalInPaise Int
@@ -129,6 +145,14 @@ model Order {
   razorpayPaymentId String?
 
   items     OrderItem[]
+
+   // Mandatory for every order.
+  billingAddressId String
+  billingAddress   Address @relation("BillingAddress",fields: [billingAddressId],references: [id])
+
+  // Required only when the cart contains physical hardware.
+  shippingAddressId String?
+  shippingAddress   Address? @relation("ShippingAddress",fields: [shippingAddressId],references: [id])
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
@@ -148,10 +172,12 @@ model OrderItem {
   // Name and price are snapshotted so an admin editing the catalogue later
   // cannot rewrite the history of what somebody actually paid.
   // productName       String
-  unitPriceInPaise  Int
+  // unitPriceInPaise  Int  already getting from the product realasion
   quantity          Int
 
-  serviceDurationMonths Int
+  // Used only for software such as vSpace.
+  licenceSeats          Int?
+  serviceDurationMonths Int?
   serviceStartsAt DateTime?
   serviceEndsAt   DateTime?
   // selectedOptions   Json 
@@ -159,6 +185,30 @@ model OrderItem {
 
   @@index([orderId])
 }
+
+model Address {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName  String
+  phone       String
+  fullAddress String
+  city      String
+  state     String
+  postalCode String
+  country   String   @default("India")
+
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
 
 model Lead {
   id           String     @id @default(cuid())
