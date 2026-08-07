@@ -52,7 +52,7 @@ export default async function HomePage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/products" size="lg">
-                See the three products <ArrowRight className="h-4 w-4" />
+                Check the products <ArrowRight className="h-4 w-4" />
               </ButtonLink>
               <LeadCta type="DEMO" label="Book a demo" variant="secondary" />
             </div>

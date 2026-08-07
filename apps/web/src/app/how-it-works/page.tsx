@@ -104,7 +104,7 @@ export default function HowItWorksPage() {
       <section className="section">
         <div className="container-page flex flex-wrap items-center gap-4">
           <ButtonLink href="/products" size="lg">
-            See the three products
+            Check our products
           </ButtonLink>
           <LeadCta type="DEMO" label="Book a demo" variant="secondary" />
         </div>
