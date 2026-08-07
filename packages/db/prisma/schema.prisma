@@ -1,8 +1,9 @@
 // NComputing India store — data model.
 //
 // Money is stored everywhere as an integer number of paise (1 rupee = 100 paise).
-// Floats are never used for currency: 0.1 + 0.2 !== 0.3 is not something you want
-// anywhere near an invoice total.
+// Floats are never used for currency, and Razorpay's own `amount` field is paise
+// too — naming it *InPaise* everywhere is what stops that unit from getting
+// mixed up with rupees at a call site.
 
 generator client {
   provider = "prisma-client"
@@ -50,6 +51,9 @@ enum LeadStatus {
   CLOSED
 }
 
+// enum Currency {
+
+// }
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -57,7 +61,6 @@ model User {
   password     String // bcrypt hash, never the plaintext
   phone        String?
   organization String?
-  addresses Address[]
   role         Role     @default(USER)
   orders       Order[]
   createdAt    DateTime @default(now())
@@ -65,78 +68,38 @@ model User {
 }
 
 model Product {
-  id             String          @id @default(cuid())
-  slug           String          @unique
-  name           String
-  
-  // usersPerDevice Int
-  type ProductType 
-  price    Int
-  // imageEmoji     String          @default("🖥️")
-  isActive       Boolean         @default(true) //can we show in the website or not
-  // sortOrder      Int             @default(0)
-  // Free-form marketing/spec content that only ever gets rendered, never queried.
-  marketing ProductMarketing?
-  // options        ProductOption[]
-  orderItems     OrderItem[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
+  id       String      @id @default(cuid())
+  slug     String      @unique
+  name     String
+  type     ProductType
+  // priceInPaise Int  //use rupess
+  amount Float
+  currency String @default("INR")
+  isActive Boolean     @default(true) // show on the site or not
 
-model ProductMarketing {
-  id             String  @id @default(cuid())
-
-  // @unique makes this a one-to-one relationship.
-  productId      String  @unique
-  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
+  // Marketing copy — folded onto the product instead of a separate table.
+  // It only ever gets rendered, never queried on its own.
   tagline        String
   summary        String
   highlights     String[]
   specifications Json
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
-
-// A configurable add-on for a product (support plan, licence pack, dongle kit).
-// Options are grouped; the UI renders one radio group per `group`.
-// model ProductOption {
-//   id                String  @id @default(cuid())
-//   productId         String
-//   product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-//   group             String
-//   label             String
-//   description       String?
-//   priceDeltaInPaise Int     @default(0)
-//   isDefault         Boolean @default(false)
-//   sortOrder         Int     @default(0)
-
-//   @@index([productId])
-// }
 
 model Order {
   id          String @id @default(cuid())
   orderNumber String @unique
 
-  // Every order belongs to a logged-in user. Ownership checks in the service
-  // layer compare this against the JWT subject.
+  // Every order belongs to a logged-in user. Ownership checks in the
+  // controller compare this against the JWT subject.
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  // Snapshot of the customer at the time of purchase. Denormalised on purpose:
-  // if the user later edits their profile, the order must not silently change.
-  // customerName  String
-  // customerEmail String
-  // customerPhone String
-
-  // shippingAddress Json //make a schema of address
-  // billingAddress  Json
-
-  // subtotalInPaise Int
-  // taxInPaise      Int
-  // totalInPaise    Int
-  amount Int //in rupess as rasorpay except in rupees
+  orderAmount Float
+  orderCurrency String @default("INR")
 
   status        OrderStatus   @default(PENDING)
   paymentStatus PaymentStatus @default(PENDING)
@@ -144,17 +107,17 @@ model Order {
   razorpayOrderId   String? @unique
   razorpayPaymentId String?
 
-  items     OrderItem[]
+  items OrderItem[]
+  //address imp
 
-   // Mandatory for every order.
-  billingAddressId String
-  billingAddress   Address @relation("BillingAddress",fields: [billingAddressId],references: [id])
+  // Snapshot of where the order goes, taken at checkout — a JSON blob rather
+  // than a row in its own table, so a user editing a saved address later can
+  // never rewrite the history of where a past order was actually sent.
+  billingAddress  Json // required for every order
+  shippingAddress Json? // only present when the cart contains hardware
 
-  // Required only when the cart contains physical hardware.
-  shippingAddressId String?
-  shippingAddress   Address? @relation("ShippingAddress",fields: [shippingAddressId],references: [id])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -169,47 +132,23 @@ model OrderItem {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  // Name and price are snapshotted so an admin editing the catalogue later
-  // cannot rewrite the history of what somebody actually paid.
-  // productName       String
-  // unitPriceInPaise  Int  already getting from the product realasion
-  quantity          Int
+//hardware
+  quantity Int @default(1)
 
-  // Used only for software such as vSpace.
+  // Only set for SOFTWARE line items.
   licenceSeats          Int?
   serviceDurationMonths Int?
-  serviceStartsAt DateTime?
-  serviceEndsAt   DateTime?
-  // selectedOptions   Json 
-  // lineTotalInPaise  Int can calculate it 
-
-  @@index([orderId])
-}
-
-model Address {
-  id        String   @id @default(cuid())
-
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  fullName  String
-  phone       String
-  fullAddress String
-  city      String
-  state     String
-  postalCode String
-  country   String   @default("India")
-
-  shippingOrders Order[] @relation("ShippingAddress")
-  billingOrders  Order[] @relation("BillingAddress")
+  serviceStartsAt       DateTime?
+  serviceEndsAt         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
+  @@index([orderId])
 }
 
-
+// A visitor who is not ready to buy yet — captured from the "Request a demo" /
+// "Contact sales" / "Request pricing" forms on the marketing site.
 model Lead {
   id           String     @id @default(cuid())
   type         LeadType
