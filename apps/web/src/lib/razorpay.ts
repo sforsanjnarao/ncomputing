@@ -34,7 +34,9 @@ export function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
 
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${CHECKOUT_SCRIPT}"]`);
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${CHECKOUT_SCRIPT}"]`,
+    );
     if (existing) {
       existing.addEventListener("load", () => resolve(true));
       existing.addEventListener("error", () => resolve(false));

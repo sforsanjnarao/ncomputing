@@ -49,10 +49,13 @@ export default function ContactPage() {
         <div className="container-page py-14 sm:py-20">
           <div className="max-w-2xl">
             <p className="eyebrow">Get in touch</p>
-            <h1 className="heading-1 mt-3">Most people talk to us before they buy.</h1>
+            <h1 className="heading-1 mt-3">
+              Most people talk to us before they buy.
+            </h1>
             <p className="lead mt-5">
-              A 30-seat lab is a real decision, and it is worth getting the host sizing and the
-              Windows licensing right first. Pick whichever of these fits where you are.
+              A 30-seat lab is a real decision, and it is worth getting the host
+              sizing and the Windows licensing right first. Pick whichever of
+              these fits where you are.
             </p>
           </div>
         </div>
@@ -65,8 +68,15 @@ export default function ContactPage() {
               <CardBody className="flex flex-1 flex-col">
                 <path.icon className="h-6 w-6 text-brand-700" />
                 <h2 className="mt-4 text-lg font-semibold">{path.title}</h2>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{path.body}</p>
-                <LeadCta type={path.type} label={path.label} size="md" className="mt-6 w-full" />
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                  {path.body}
+                </p>
+                <LeadCta
+                  type={path.type}
+                  label={path.label}
+                  size="md"
+                  className="mt-6 w-full"
+                />
               </CardBody>
             </Card>
           ))}

@@ -3,20 +3,26 @@ import { Resend } from "resend";
 import { formatInr } from "@repo/types";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const MAIL_FROM = process.env.MAIL_FROM || "NComputing India <onboarding@resend.dev>";
+const MAIL_FROM =
+  process.env.MAIL_FROM || "NComputing India <onboarding@resend.dev>";
 
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 async function send(to: string, subject: string, html: string) {
   if (!resend) {
     // Keeps local development and CI runnable without a Resend key.
-    console.log(`[email] RESEND_API_KEY not set — would have sent "${subject}" to ${to}`);
+    console.log(
+      `[email] RESEND_API_KEY not set — would have sent "${subject}" to ${to}`,
+    );
     return;
   }
   await resend.emails.send({ from: MAIL_FROM, to, subject, html });
 }
 
-type OrderWithDetails = Order & { items: (OrderItem & { product: Product })[]; user: User };
+type OrderWithDetails = Order & {
+  items: (OrderItem & { product: Product })[];
+  user: User;
+};
 
 export async function sendOrderConfirmation(order: OrderWithDetails) {
   const rows = order.items
@@ -25,13 +31,13 @@ export async function sendOrderConfirmation(order: OrderWithDetails) {
         <td style="padding:12px 0;border-bottom:1px solid #e2e8f0">
           <strong>${item.product.name}</strong>
           <div style="color:#64748b;font-size:13px">Qty ${item.quantity} &times; ${formatInr(
-            item.product.amount
+            item.product.amount,
           )}</div>
         </td>
         <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;text-align:right">${formatInr(
-          item.product.amount * item.quantity
+          item.product.amount * item.quantity,
         )}</td>
-      </tr>`
+      </tr>`,
     )
     .join("");
 
@@ -46,7 +52,7 @@ export async function sendOrderConfirmation(order: OrderWithDetails) {
     <table style="width:100%;font-size:14px">
       <tr><td style="padding-top:8px"><strong>Total paid</strong></td>
           <td style="text-align:right;padding-top:8px"><strong>${formatInr(
-            order.orderAmount
+            order.orderAmount,
           )}</strong></td></tr>
     </table>
     <p style="color:#64748b;font-size:13px;margin-top:32px">
@@ -68,5 +74,9 @@ export async function sendLeadNotification(lead: Lead) {
     <p style="color:#64748b;font-size:13px">Reference: ${lead.type} &middot; ${lead.id}</p>
   </div>`;
 
-  await send(lead.email, "We've received your request — NComputing India", html);
+  await send(
+    lead.email,
+    "We've received your request — NComputing India",
+    html,
+  );
 }

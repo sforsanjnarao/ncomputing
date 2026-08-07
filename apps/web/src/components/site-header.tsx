@@ -28,7 +28,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-semibold tracking-tight"
+        >
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-700 text-sm text-white">
             N
           </span>
@@ -44,7 +47,7 @@ export function SiteHeader() {
               href={item.href}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-ink",
-                pathname.startsWith(item.href) && "text-brand-700"
+                pathname.startsWith(item.href) && "text-brand-700",
               )}
             >
               {item.label}
@@ -81,7 +84,12 @@ export function SiteHeader() {
                 </Button>
               </div>
             ) : (
-              <ButtonLink href="/login" variant="secondary" size="sm" className="hidden md:inline-flex">
+              <ButtonLink
+                href="/login"
+                variant="secondary"
+                size="sm"
+                className="hidden md:inline-flex"
+              >
                 Sign in
               </ButtonLink>
             ))}
@@ -93,7 +101,11 @@ export function SiteHeader() {
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
           >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {menuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
         </div>
       </div>

@@ -1,5 +1,9 @@
 import express, { Router } from "express";
-import { createPayment, paymentWebhook, verifyPayment } from "../controllers/payment.controller";
+import {
+  createPayment,
+  paymentWebhook,
+  verifyPayment,
+} from "../controllers/payment.controller";
 import { protectMiddleware } from "../middleware/protected";
 
 const router: Router = express.Router();

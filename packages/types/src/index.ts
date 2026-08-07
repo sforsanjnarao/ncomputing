@@ -13,7 +13,8 @@ export function formatInr(amount: number): string {
 
 export type Role = "USER" | "ADMIN";
 export type ProductType = "HARDWARE" | "SOFTWARE";
-export type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+export type OrderStatus =
+  "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 export type LeadType = "DEMO" | "SALES" | "PRICING";
 export type LeadStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "CLOSED";
@@ -26,7 +27,12 @@ export const ORDER_STATUSES: OrderStatus[] = [
   "CANCELLED",
 ];
 
-export const LEAD_STATUSES: LeadStatus[] = ["NEW", "CONTACTED", "QUALIFIED", "CLOSED"];
+export const LEAD_STATUSES: LeadStatus[] = [
+  "NEW",
+  "CONTACTED",
+  "QUALIFIED",
+  "CLOSED",
+];
 
 // A saved address. Every order points at one of these rather than storing a
 // throwaway copy — the first time someone checks out it gets created, and
@@ -89,7 +95,12 @@ export type Order = {
   shippingAddress: Address | null;
   createdAt: string;
   items: OrderItem[];
-  user?: { id: string; name: string; email: string; organization: string | null };
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    organization: string | null;
+  };
 };
 
 export type Lead = {

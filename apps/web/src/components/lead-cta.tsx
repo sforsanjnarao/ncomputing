@@ -8,7 +8,8 @@ import type { LeadType } from "@/lib/types";
 const COPY: Record<LeadType, { title: string; description: string }> = {
   DEMO: {
     title: "Book a demo",
-    description: "We will set up a live walkthrough on your own network, at a time that suits you.",
+    description:
+      "We will set up a live walkthrough on your own network, at a time that suits you.",
   },
   SALES: {
     title: "Talk to sales",
@@ -16,7 +17,8 @@ const COPY: Record<LeadType, { title: string; description: string }> = {
   },
   PRICING: {
     title: "Request pricing",
-    description: "Tell us how many seats you need and we will email a written quote.",
+    description:
+      "Tell us how many seats you need and we will email a written quote.",
   },
 };
 

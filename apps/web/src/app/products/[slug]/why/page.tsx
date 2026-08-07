@@ -10,7 +10,9 @@ import { LeadCta } from "@/components/lead-cta";
 
 type PageProps = { params: { slug: string } };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const content = WHY_CONTENT[params.slug];
   if (!content) return { title: "Product" };
   return { title: `Why ${params.slug}`, description: content.problemTitle };
@@ -20,7 +22,9 @@ export default async function WhyPage({ params }: PageProps) {
   const content = WHY_CONTENT[params.slug];
   if (!content) notFound();
 
-  const { product } = await fetchFromApi<{ product: Product }>(`/products/${params.slug}`);
+  const { product } = await fetchFromApi<{ product: Product }>(
+    `/products/${params.slug}`,
+  );
 
   return (
     <>
@@ -37,7 +41,9 @@ export default async function WhyPage({ params }: PageProps) {
           <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <p className="eyebrow">Who this is for</p>
-              <p className="mt-2 text-lg font-medium text-ink">{content.audience}</p>
+              <p className="mt-2 text-lg font-medium text-ink">
+                {content.audience}
+              </p>
               <h1 className="heading-1 mt-6">{content.problemTitle}</h1>
               <p className="lead mt-5">{content.problemBody}</p>
             </div>
@@ -52,12 +58,17 @@ export default async function WhyPage({ params }: PageProps) {
           <h2 className="heading-2">Does this sound familiar?</h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {content.symptoms.map((symptom) => (
-              <div key={symptom.title} className="rounded-2xl border border-slate-200 p-6">
+              <div
+                key={symptom.title}
+                className="rounded-2xl border border-slate-200 p-6"
+              >
                 <div className="flex items-start gap-3">
                   <X className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
                   <div>
                     <h3 className="font-semibold">{symptom.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{symptom.body}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+                      {symptom.body}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -76,12 +87,17 @@ export default async function WhyPage({ params }: PageProps) {
 
           <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {content.steps.map((step, index) => (
-              <li key={step.title} className="rounded-2xl bg-white p-6 shadow-card">
+              <li
+                key={step.title}
+                className="rounded-2xl bg-white p-6 shadow-card"
+              >
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-brand-700 text-sm font-semibold text-white">
                   {index + 1}
                 </span>
                 <h3 className="mt-4 font-semibold">{step.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{step.body}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+                  {step.body}
+                </p>
               </li>
             ))}
           </ol>
@@ -105,8 +121,12 @@ export default async function WhyPage({ params }: PageProps) {
           {/* Saying plainly when the product is wrong is what makes the rest of
               the page believable. */}
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-            <h2 className="text-lg font-semibold">When it is the wrong choice</h2>
-            <p className="mt-3 leading-relaxed text-slate-700">{content.notFor}</p>
+            <h2 className="text-lg font-semibold">
+              When it is the wrong choice
+            </h2>
+            <p className="mt-3 leading-relaxed text-slate-700">
+              {content.notFor}
+            </p>
             <Link
               href="/products"
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:underline"
@@ -124,11 +144,16 @@ export default async function WhyPage({ params }: PageProps) {
               Sounds right? Here are the specifications.
             </h2>
             <p className="mt-2 text-slate-300">
-              Configure your {product.name}, choose a support plan and order it online.
+              Configure your {product.name}, choose a support plan and order it
+              online.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={`/products/${product.slug}`} size="lg" className="bg-white text-ink hover:bg-slate-100">
+            <ButtonLink
+              href={`/products/${product.slug}`}
+              size="lg"
+              className="bg-white text-ink hover:bg-slate-100"
+            >
               View specs &amp; buy <ArrowRight className="h-4 w-4" />
             </ButtonLink>
             <LeadCta

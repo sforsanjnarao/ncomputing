@@ -1,0 +1,5 @@
+dist
+.next
+.turbo
+generated
+pnpm-lock.yaml

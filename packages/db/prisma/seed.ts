@@ -26,7 +26,8 @@ const PRODUCTS = [
       Memory: "2 GB",
       Ports: "2x USB 3.0, 2x USB 2.0, HDMI",
       Connectivity: "Dual-band 2.4/5 GHz Wi-Fi, Gigabit Ethernet",
-      "Supported platforms": "Microsoft AVD, RDS, VERDE VDI, vSpace Pro Enterprise",
+      "Supported platforms":
+        "Microsoft AVD, RDS, VERDE VDI, vSpace Pro Enterprise",
     },
     isActive: true,
   },
@@ -51,7 +52,8 @@ const PRODUCTS = [
       Storage: "16 GB eMMC",
       Ports: "2x USB 3.0, 2x USB 2.0, dual HDMI",
       Connectivity: "Dual-band 2.4/5 GHz Wi-Fi, Gigabit Ethernet",
-      "Supported platforms": "Citrix, Omnissa Horizon, Microsoft AVD, Windows 365, RDP",
+      "Supported platforms":
+        "Citrix, Omnissa Horizon, Microsoft AVD, Windows 365, RDP",
     },
     isActive: true,
   },

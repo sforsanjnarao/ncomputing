@@ -13,7 +13,12 @@ const router: Router = express.Router();
 // Admin routes are declared before "/:id" so that a literal "/admin" path is
 // never swallowed by the dynamic segment.
 router.get("/admin", protectMiddleware, requireAdmin, adminListOrders);
-router.patch("/admin/:id/status", protectMiddleware, requireAdmin, adminUpdateOrderStatus);
+router.patch(
+  "/admin/:id/status",
+  protectMiddleware,
+  requireAdmin,
+  adminUpdateOrderStatus,
+);
 
 router.post("/", protectMiddleware, createOrder);
 router.get("/mine", protectMiddleware, getMyOrders);

@@ -11,7 +11,11 @@ import { useAuth } from "@/context/auth-context";
  * they cannot use. The real enforcement is protectMiddleware / requireRole on
  * the Express API, since a determined user can always call the API directly.
  */
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+export default function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();

@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { Product } from "@/lib/types";
 
 const STORAGE_KEY = "ncomputing.cart.v1";
@@ -54,38 +61,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
   }, [lines, hydrated]);
 
-  const add = useCallback((product: Product, quantity: number, seats?: number) => {
-    setLines((current) => {
-      const existing = current.find((line) => line.productId === product.id);
-      if (existing) {
-        return current.map((line) =>
-          line.productId === product.id
-            ? { ...line, quantity: line.quantity + quantity, seats }
-            : line
-        );
-      }
+  const add = useCallback(
+    (product: Product, quantity: number, seats?: number) => {
+      setLines((current) => {
+        const existing = current.find((line) => line.productId === product.id);
+        if (existing) {
+          return current.map((line) =>
+            line.productId === product.id
+              ? { ...line, quantity: line.quantity + quantity, seats }
+              : line,
+          );
+        }
 
-      return [
-        ...current,
-        {
-          key: product.id,
-          productId: product.id,
-          slug: product.slug,
-          name: product.name,
-          type: product.type,
-          quantity,
-          unitAmount: product.amount,
-          seats,
-        },
-      ];
-    });
-  }, []);
+        return [
+          ...current,
+          {
+            key: product.id,
+            productId: product.id,
+            slug: product.slug,
+            name: product.name,
+            type: product.type,
+            quantity,
+            unitAmount: product.amount,
+            seats,
+          },
+        ];
+      });
+    },
+    [],
+  );
 
   const updateQuantity = useCallback((key: string, quantity: number) => {
     setLines((current) =>
       quantity < 1
         ? current.filter((line) => line.key !== key)
-        : current.map((line) => (line.key === key ? { ...line, quantity } : line))
+        : current.map((line) =>
+            line.key === key ? { ...line, quantity } : line,
+          ),
     );
   }, []);
 
@@ -97,15 +109,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totals = useMemo(
     () => ({
-      totalAmount: lines.reduce((sum, line) => sum + line.unitAmount * line.quantity, 0),
+      totalAmount: lines.reduce(
+        (sum, line) => sum + line.unitAmount * line.quantity,
+        0,
+      ),
       itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
     }),
-    [lines]
+    [lines],
   );
 
   const value = useMemo(
     () => ({ lines, add, updateQuantity, remove, clear, ...totals }),
-    [lines, add, updateQuantity, remove, clear, totals]
+    [lines, add, updateQuantity, remove, clear, totals],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -53,7 +53,9 @@ export function Modal({
           <X className="h-5 w-5" />
         </button>
         <h2 className="pr-8 text-lg font-semibold text-ink">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
+        {description ? (
+          <p className="mt-1 text-sm text-slate-600">{description}</p>
+        ) : null}
         <div className="mt-5">{children}</div>
       </div>
     </div>

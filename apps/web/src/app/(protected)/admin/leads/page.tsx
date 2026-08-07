@@ -4,7 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatDate } from "@/lib/format";
-import { LEAD_STATUSES, type Lead, type LeadStatus, type LeadType } from "@/lib/types";
+import {
+  LEAD_STATUSES,
+  type Lead,
+  type LeadStatus,
+  type LeadType,
+} from "@/lib/types";
 import { Card, CardBody } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/field";
 import { Badge, LeadStatusBadge } from "@/components/ui/badge";
@@ -44,10 +49,15 @@ export default function AdminLeadsPage() {
   }, [load]);
 
   async function changeStatus(lead: Lead, next: LeadStatus) {
-    const { lead: updated } = await api.patch<{ lead: Lead }>(`/leads/admin/${lead.id}`, {
-      status: next,
-    });
-    setLeads((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+    const { lead: updated } = await api.patch<{ lead: Lead }>(
+      `/leads/admin/${lead.id}`,
+      {
+        status: next,
+      },
+    );
+    setLeads((current) =>
+      current.map((item) => (item.id === updated.id ? updated : item)),
+    );
   }
 
   return (
@@ -81,7 +91,9 @@ export default function AdminLeadsPage() {
           </Select>
           <Select
             value={status}
-            onChange={(event) => setStatus(event.target.value as LeadStatus | "")}
+            onChange={(event) =>
+              setStatus(event.target.value as LeadStatus | "")
+            }
             className="sm:w-44"
             aria-label="Filter by status"
           >
@@ -125,11 +137,15 @@ export default function AdminLeadsPage() {
               ) : (
                 leads.map((lead) => (
                   <tr key={lead.id} className="align-top hover:bg-slate-50">
-                    <td className="p-4 text-slate-600">{formatDate(lead.createdAt)}</td>
+                    <td className="p-4 text-slate-600">
+                      {formatDate(lead.createdAt)}
+                    </td>
                     <td className="p-4">
                       <Badge tone="blue">{TYPE_LABELS[lead.type]}</Badge>
                       {lead.productSlug && (
-                        <p className="mt-1 text-xs text-slate-500">{lead.productSlug}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {lead.productSlug}
+                        </p>
                       )}
                     </td>
                     <td className="p-4">
@@ -137,13 +153,21 @@ export default function AdminLeadsPage() {
                       <p className="text-xs text-slate-500">{lead.email}</p>
                       <p className="text-xs text-slate-500">{lead.phone}</p>
                     </td>
-                    <td className="p-4 text-slate-600">{lead.organization ?? "—"}</td>
-                    <td className="p-4 tabular-nums text-slate-600">{lead.seats ?? "—"}</td>
-                    <td className="p-4 max-w-xs text-slate-600">{lead.message ?? "—"}</td>
+                    <td className="p-4 text-slate-600">
+                      {lead.organization ?? "—"}
+                    </td>
+                    <td className="p-4 tabular-nums text-slate-600">
+                      {lead.seats ?? "—"}
+                    </td>
+                    <td className="p-4 max-w-xs text-slate-600">
+                      {lead.message ?? "—"}
+                    </td>
                     <td className="p-4">
                       <Select
                         value={lead.status}
-                        onChange={(event) => changeStatus(lead, event.target.value as LeadStatus)}
+                        onChange={(event) =>
+                          changeStatus(lead, event.target.value as LeadStatus)
+                        }
                         className="h-9 py-0 text-xs"
                         aria-label={`Status for ${lead.name}`}
                       >

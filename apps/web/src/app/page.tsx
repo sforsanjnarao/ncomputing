@@ -45,10 +45,11 @@ export default async function HomePage() {
               One computer. Up to thirty people using it at the same time.
             </h1>
             <p className="lead mt-5">
-              A modern PC is far more powerful than any one person needs. NComputing shares that
-              power across many users, each with their own monitor, keyboard, mouse, files and
-              desktop. Schools and small businesses across India use it to cut hardware,
-              electricity and maintenance costs by half or more.
+              A modern PC is far more powerful than any one person needs.
+              NComputing shares that power across many users, each with their
+              own monitor, keyboard, mouse, files and desktop. Schools and small
+              businesses across India use it to cut hardware, electricity and
+              maintenance costs by half or more.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/products" size="lg">
@@ -66,7 +67,9 @@ export default async function HomePage() {
               ["Up to 90%", "less electricity per seat"],
             ].map(([value, label]) => (
               <div key={label}>
-                <dt className="text-2xl font-semibold text-ink sm:text-3xl">{value}</dt>
+                <dt className="text-2xl font-semibold text-ink sm:text-3xl">
+                  {value}
+                </dt>
                 <dd className="mt-1 text-sm text-slate-600">{label}</dd>
               </div>
             ))}
@@ -83,16 +86,22 @@ export default async function HomePage() {
               A computer room is not one purchase. It is thirty of everything.
             </h2>
             <p className="lead mt-4">
-              Most of what a lab or an office actually costs shows up after the invoice is paid.
+              Most of what a lab or an office actually costs shows up after the
+              invoice is paid.
             </p>
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PAIN_POINTS.map((point) => (
-              <div key={point.title} className="rounded-2xl border border-slate-200 p-6">
+              <div
+                key={point.title}
+                className="rounded-2xl border border-slate-200 p-6"
+              >
                 <point.icon className="h-6 w-6 text-brand-700" />
                 <h3 className="mt-4 font-semibold">{point.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{point.body}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {point.body}
+                </p>
               </div>
             ))}
           </div>
@@ -105,10 +114,13 @@ export default async function HomePage() {
         <div className="container-page">
           <div className="mb-8 max-w-2xl">
             <p className="eyebrow">What it would cost you</p>
-            <h2 className="heading-2 mt-3">Move the slider to your number of seats.</h2>
+            <h2 className="heading-2 mt-3">
+              Move the slider to your number of seats.
+            </h2>
             <p className="lead mt-4">
-              Compare buying one PC per person against sharing a few hosts. Every assumption is
-              printed underneath so you can check it against your own quotes.
+              Compare buying one PC per person against sharing a few hosts.
+              Every assumption is printed underneath so you can check it against
+              your own quotes.
             </p>
           </div>
           <SavingsCalculator />
@@ -120,10 +132,13 @@ export default async function HomePage() {
         <div className="container-page">
           <div className="max-w-2xl">
             <p className="eyebrow">Choose a product</p>
-            <h2 className="heading-2 mt-3">Three ways to give someone a desktop.</h2>
+            <h2 className="heading-2 mt-3">
+              Three ways to give someone a desktop.
+            </h2>
             <p className="lead mt-4">
-              They differ in one thing: where the desktop actually runs. Start with the one that
-              matches your situation — each has a page explaining who it is for.
+              They differ in one thing: where the desktop actually runs. Start
+              with the one that matches your situation — each has a page
+              explaining who it is for.
             </p>
           </div>
 
@@ -143,12 +158,17 @@ export default async function HomePage() {
               Not sure which one fits your room?
             </h2>
             <p className="mt-2 text-slate-300">
-              Tell us how many people need a computer and what they do all day. We will tell you
-              honestly which product suits — including if the answer is none of them.
+              Tell us how many people need a computer and what they do all day.
+              We will tell you honestly which product suits — including if the
+              answer is none of them.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <LeadCta type="SALES" label="Talk to sales" className="bg-white text-ink hover:bg-slate-100" />
+            <LeadCta
+              type="SALES"
+              label="Talk to sales"
+              className="bg-white text-ink hover:bg-slate-100"
+            />
             <Link
               href="/how-it-works"
               className="inline-flex h-12 items-center rounded-lg border border-white/25 px-6 text-base font-medium text-white hover:bg-white/10"

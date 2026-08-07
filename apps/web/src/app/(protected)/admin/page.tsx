@@ -49,10 +49,15 @@ export default function AdminOrdersPage() {
   }, [orders]);
 
   async function changeStatus(order: Order, next: OrderStatus) {
-    const { order: updated } = await api.patch<{ order: Order }>(`/orders/admin/${order.id}/status`, {
-      status: next,
-    });
-    setOrders((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+    const { order: updated } = await api.patch<{ order: Order }>(
+      `/orders/admin/${order.id}/status`,
+      {
+        status: next,
+      },
+    );
+    setOrders((current) =>
+      current.map((item) => (item.id === updated.id ? updated : item)),
+    );
     setSelected((current) => (current?.id === updated.id ? updated : current));
   }
 
@@ -69,7 +74,9 @@ export default function AdminOrdersPage() {
           <Card key={label}>
             <CardBody className="p-5">
               <p className="text-sm text-slate-500">{label}</p>
-              <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums">
+                {value}
+              </p>
             </CardBody>
           </Card>
         ))}
@@ -89,7 +96,9 @@ export default function AdminOrdersPage() {
           </div>
           <Select
             value={status}
-            onChange={(event) => setStatus(event.target.value as OrderStatus | "")}
+            onChange={(event) =>
+              setStatus(event.target.value as OrderStatus | "")
+            }
             className="sm:w-52"
             aria-label="Filter by status"
           >
@@ -133,13 +142,21 @@ export default function AdminOrdersPage() {
               ) : (
                 orders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50">
-                    <td className="p-4 font-mono font-medium">{order.orderNumber}</td>
+                    <td className="p-4 font-mono font-medium">
+                      {order.orderNumber}
+                    </td>
                     <td className="p-4">
                       <p>{order.user?.name}</p>
-                      <p className="text-xs text-slate-500">{order.user?.email}</p>
+                      <p className="text-xs text-slate-500">
+                        {order.user?.email}
+                      </p>
                     </td>
-                    <td className="p-4 text-slate-600">{formatDate(order.createdAt)}</td>
-                    <td className="p-4 tabular-nums">{formatInr(order.orderAmount)}</td>
+                    <td className="p-4 text-slate-600">
+                      {formatDate(order.createdAt)}
+                    </td>
+                    <td className="p-4 tabular-nums">
+                      {formatInr(order.orderAmount)}
+                    </td>
                     <td className="p-4">
                       <PaymentStatusBadge status={order.paymentStatus} />
                     </td>
@@ -160,7 +177,11 @@ export default function AdminOrdersPage() {
                       </Select>
                     </td>
                     <td className="p-4 text-right">
-                      <Button variant="secondary" size="sm" onClick={() => setSelected(order)}>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setSelected(order)}
+                      >
                         View
                       </Button>
                     </td>
@@ -176,7 +197,9 @@ export default function AdminOrdersPage() {
         open={Boolean(selected)}
         onClose={() => setSelected(null)}
         title={selected?.orderNumber ?? ""}
-        description={selected ? `Placed ${formatDate(selected.createdAt)}` : undefined}
+        description={
+          selected ? `Placed ${formatDate(selected.createdAt)}` : undefined
+        }
       >
         {selected && (
           <div className="space-y-6">
@@ -203,7 +226,10 @@ export default function AdminOrdersPage() {
             <OrderItemsTable order={selected} />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <AddressBlock title="Shipping" address={selected.shippingAddress} />
+              <AddressBlock
+                title="Shipping"
+                address={selected.shippingAddress}
+              />
               <AddressBlock title="Billing" address={selected.billingAddress} />
             </div>
           </div>

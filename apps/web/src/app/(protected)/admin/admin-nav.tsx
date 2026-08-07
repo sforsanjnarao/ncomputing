@@ -20,7 +20,10 @@ export function AdminNav() {
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex w-full max-w-content flex-col gap-3 px-5 py-3 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-semibold"
+          >
             <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-700 text-xs text-white">
               N
             </span>
@@ -34,8 +37,10 @@ export function AdminNav() {
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100",
                   // "/admin" would otherwise match every admin URL.
-                  (link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href)) &&
-                    "bg-brand-50 text-brand-700"
+                  (link.href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname.startsWith(link.href)) &&
+                    "bg-brand-50 text-brand-700",
                 )}
               >
                 {link.label}

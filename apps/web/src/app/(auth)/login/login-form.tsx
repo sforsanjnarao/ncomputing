@@ -19,7 +19,9 @@ export function LoginForm() {
     setSubmitting(true);
     setError(null);
 
-    const data = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
+    const data = Object.fromEntries(
+      new FormData(event.currentTarget),
+    ) as Record<string, string>;
 
     try {
       const user = await login(data.email, data.password);
@@ -27,13 +29,16 @@ export function LoginForm() {
       // Send admins to the dashboard, and everyone else back to whatever the
       // middleware interrupted.
       const next = searchParams.get("next");
-      const destination = user.role === "ADMIN" ? "/admin" : next || "/account/orders";
+      const destination =
+        user.role === "ADMIN" ? "/admin" : next || "/account/orders";
 
       router.push(destination);
       // Re-run middleware and server components now that the cookie exists.
       router.refresh();
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : "Could not sign in.");
+      setError(
+        caught instanceof ApiError ? caught.message : "Could not sign in.",
+      );
       setSubmitting(false);
     }
   }
@@ -41,11 +46,25 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="Email">
-        {(props) => <Input {...props} name="email" type="email" required autoComplete="email" />}
+        {(props) => (
+          <Input
+            {...props}
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+          />
+        )}
       </Field>
       <Field label="Password">
         {(props) => (
-          <Input {...props} name="password" type="password" required autoComplete="current-password" />
+          <Input
+            {...props}
+            name="password"
+            type="password"
+            required
+            autoComplete="current-password"
+          />
         )}
       </Field>
 

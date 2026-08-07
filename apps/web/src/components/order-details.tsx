@@ -12,7 +12,9 @@ export function OrderItemsTable({ order }: { order: Order }) {
             <div>
               <p className="font-medium">{item.product.name}</p>
               {item.seats && (
-                <p className="mt-0.5 text-xs text-slate-500">{item.seats} licence seats</p>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {item.seats} licence seats
+                </p>
               )}
               <p className="mt-0.5 text-sm text-slate-600">
                 {item.quantity} × {formatInr(item.product.amount)}
@@ -35,7 +37,13 @@ export function OrderItemsTable({ order }: { order: Order }) {
   );
 }
 
-export function AddressBlock({ title, address }: { title: string; address: Address | null }) {
+export function AddressBlock({
+  title,
+  address,
+}: {
+  title: string;
+  address: Address | null;
+}) {
   if (!address) return null;
 
   return (

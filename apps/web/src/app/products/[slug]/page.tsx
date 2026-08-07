@@ -12,14 +12,18 @@ type PageProps = { params: { slug: string } };
 
 async function getProduct(slug: string) {
   try {
-    const { product } = await fetchFromApi<{ product: Product }>(`/products/${slug}`);
+    const { product } = await fetchFromApi<{ product: Product }>(
+      `/products/${slug}`,
+    );
     return product;
   } catch {
     return null;
   }
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const product = await getProduct(params.slug);
   if (!product) return { title: "Product not found" };
   return { title: product.name, description: product.summary };
@@ -44,7 +48,9 @@ export default async function ProductPage({ params }: PageProps) {
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr,26rem]">
         <div>
           <h1 className="heading-1">{product.name}</h1>
-          <p className="mt-2 text-lg font-medium text-brand-700">{product.tagline}</p>
+          <p className="mt-2 text-lg font-medium text-brand-700">
+            {product.tagline}
+          </p>
           <p className="lead mt-5">{product.summary}</p>
 
           {hasWhyPage && (
@@ -73,8 +79,13 @@ export default async function ProductPage({ params }: PageProps) {
             <h2 className="heading-2 text-xl">Specifications</h2>
             <dl className="mt-4 divide-y divide-slate-200 rounded-2xl border border-slate-200">
               {Object.entries(product.specifications).map(([label, value]) => (
-                <div key={label} className="grid gap-1 p-4 sm:grid-cols-[12rem,1fr] sm:gap-4">
-                  <dt className="text-sm font-medium text-slate-500">{label}</dt>
+                <div
+                  key={label}
+                  className="grid gap-1 p-4 sm:grid-cols-[12rem,1fr] sm:gap-4"
+                >
+                  <dt className="text-sm font-medium text-slate-500">
+                    {label}
+                  </dt>
                   <dd className="text-sm text-slate-800">{value}</dd>
                 </div>
               ))}
@@ -84,8 +95,8 @@ export default async function ProductPage({ params }: PageProps) {
           <div className="mt-10 rounded-2xl bg-slate-50 p-6">
             <h2 className="font-semibold">Buying more than 25 devices?</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Larger deployments are usually quoted rather than bought online — we can size the
-              host machines for you and include installation.
+              Larger deployments are usually quoted rather than bought online —
+              we can size the host machines for you and include installation.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <LeadCta

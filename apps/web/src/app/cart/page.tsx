@@ -16,7 +16,8 @@ export default function CartPage() {
         <ShoppingCart className="h-10 w-10 text-slate-300" />
         <h1 className="mt-4 text-2xl font-semibold">Your cart is empty</h1>
         <p className="mt-2 max-w-sm text-slate-600">
-          Have a look at the three products and pick the one that matches how your desktops run.
+          Have a look at the three products and pick the one that matches how
+          your desktops run.
         </p>
         <ButtonLink href="/products" size="lg" className="mt-6">
           Browse products
@@ -46,7 +47,9 @@ export default function CartPage() {
                       {line.name}
                     </Link>
                     {line.seats && (
-                      <p className="mt-1 text-sm text-slate-500">{line.seats} licence seats</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {line.seats} licence seats
+                      </p>
                     )}
                     <p className="mt-2 text-sm text-slate-600">
                       {formatInr(line.unitAmount)} each
@@ -57,16 +60,22 @@ export default function CartPage() {
                     <div className="flex items-center rounded-lg border border-slate-300">
                       <button
                         type="button"
-                        onClick={() => updateQuantity(line.key, line.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(line.key, line.quantity - 1)
+                        }
                         className="grid h-9 w-9 place-items-center text-slate-600 hover:bg-slate-50"
                         aria-label={`Decrease ${line.name} quantity`}
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <span className="w-10 text-center text-sm tabular-nums">{line.quantity}</span>
+                      <span className="w-10 text-center text-sm tabular-nums">
+                        {line.quantity}
+                      </span>
                       <button
                         type="button"
-                        onClick={() => updateQuantity(line.key, line.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(line.key, line.quantity + 1)
+                        }
                         className="grid h-9 w-9 place-items-center text-slate-600 hover:bg-slate-50"
                         aria-label={`Increase ${line.name} quantity`}
                       >
@@ -106,14 +115,20 @@ export default function CartPage() {
             <ButtonLink href="/checkout" size="lg" className="w-full">
               Proceed to checkout
             </ButtonLink>
-            <ButtonLink href="/products" variant="ghost" size="sm" className="w-full">
+            <ButtonLink
+              href="/products"
+              variant="ghost"
+              size="sm"
+              className="w-full"
+            >
               Continue shopping
             </ButtonLink>
 
             {/* Prices are recalculated by the API at checkout; this is only a
                 preview, so a stale localStorage cart cannot mislead anyone. */}
             <p className="text-xs text-slate-500">
-              Final pricing is confirmed by our server at checkout. Shipping is free across India.
+              Final pricing is confirmed by our server at checkout. Shipping is
+              free across India.
             </p>
           </CardBody>
         </Card>

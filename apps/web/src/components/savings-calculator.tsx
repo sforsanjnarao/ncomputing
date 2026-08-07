@@ -27,7 +27,10 @@ const ASSUMPTIONS = {
 
 function electricityCost(watts: number) {
   const kwh =
-    (watts / 1000) * ASSUMPTIONS.hoursPerDay * ASSUMPTIONS.daysPerYear * ASSUMPTIONS.years;
+    (watts / 1000) *
+    ASSUMPTIONS.hoursPerDay *
+    ASSUMPTIONS.daysPerYear *
+    ASSUMPTIONS.years;
   return Math.round(kwh * ASSUMPTIONS.rupeesPerKwh);
 }
 
@@ -42,9 +45,10 @@ export function SavingsCalculator() {
     const pcUpfront = seats * ASSUMPTIONS.pcCost;
     const pcPower = electricityCost(seats * ASSUMPTIONS.pcWatts);
 
-    const ncUpfront = hosts * ASSUMPTIONS.hostCost + devices * ASSUMPTIONS.devicePrice;
+    const ncUpfront =
+      hosts * ASSUMPTIONS.hostCost + devices * ASSUMPTIONS.devicePrice;
     const ncPower = electricityCost(
-      hosts * ASSUMPTIONS.hostWatts + seats * ASSUMPTIONS.deviceWattsPerSeat
+      hosts * ASSUMPTIONS.hostWatts + seats * ASSUMPTIONS.deviceWattsPerSeat,
     );
 
     const pcTotal = pcUpfront + pcPower;
@@ -91,7 +95,9 @@ export function SavingsCalculator() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-xl border border-slate-200 p-4">
-            <p className="text-sm font-medium text-slate-500">{seats} desktop PCs</p>
+            <p className="text-sm font-medium text-slate-500">
+              {seats} desktop PCs
+            </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums">
               {formatInr(result.pcTotal)}
             </p>
@@ -109,7 +115,8 @@ export function SavingsCalculator() {
 
           <div className="rounded-xl border-2 border-savings-600 bg-savings-50 p-4">
             <p className="text-sm font-medium text-savings-700">
-              {result.hosts} host {result.hosts === 1 ? "PC" : "PCs"} + {result.devices} RX420
+              {result.hosts} host {result.hosts === 1 ? "PC" : "PCs"} +{" "}
+              {result.devices} RX420
             </p>
             <p className="mt-1 text-2xl font-semibold tabular-nums text-savings-700">
               {formatInr(result.ncTotal)}
@@ -130,7 +137,9 @@ export function SavingsCalculator() {
         <div className="flex flex-col gap-4 rounded-xl bg-ink p-5 text-white sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-slate-300">You keep, over five years</p>
-            <p className="text-3xl font-semibold tabular-nums">{formatInr(result.saved)}</p>
+            <p className="text-3xl font-semibold tabular-nums">
+              {formatInr(result.saved)}
+            </p>
             <p className="mt-1 text-sm text-slate-300">
               {result.savedPercent}% less than buying {seats} PCs
             </p>
@@ -147,10 +156,11 @@ export function SavingsCalculator() {
         <p className="text-xs leading-relaxed text-slate-500">
           Assumes {formatInr(ASSUMPTIONS.pcCost)} per desktop PC,{" "}
           {formatInr(ASSUMPTIONS.hostCost)} per host serving{" "}
-          {ASSUMPTIONS.seatsPerHost} seats, {formatInr(ASSUMPTIONS.devicePrice)} per RX420
-          serving 2 seats, {ASSUMPTIONS.hoursPerDay} hours a day for{" "}
-          {ASSUMPTIONS.daysPerYear} days a year at ₹{ASSUMPTIONS.rupeesPerKwh} per unit.
-          Monitors, keyboards and mice cost the same either way and are excluded.
+          {ASSUMPTIONS.seatsPerHost} seats, {formatInr(ASSUMPTIONS.devicePrice)}{" "}
+          per RX420 serving 2 seats, {ASSUMPTIONS.hoursPerDay} hours a day for{" "}
+          {ASSUMPTIONS.daysPerYear} days a year at ₹{ASSUMPTIONS.rupeesPerKwh}{" "}
+          per unit. Monitors, keyboards and mice cost the same either way and
+          are excluded.
         </p>
       </CardBody>
 

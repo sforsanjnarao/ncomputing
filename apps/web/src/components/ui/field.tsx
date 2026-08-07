@@ -44,7 +44,11 @@ export function Field({
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
-      className={cn(control, props["aria-invalid"] && "border-red-400", className)}
+      className={cn(
+        control,
+        props["aria-invalid"] && "border-red-400",
+        className,
+      )}
       {...props}
     />
   );
@@ -53,7 +57,12 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
 export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return (
     <textarea
-      className={cn(control, "min-h-24", props["aria-invalid"] && "border-red-400", className)}
+      className={cn(
+        control,
+        "min-h-24",
+        props["aria-invalid"] && "border-red-400",
+        className,
+      )}
       {...props}
     />
   );

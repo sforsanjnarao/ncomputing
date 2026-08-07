@@ -22,7 +22,7 @@ export function Badge({
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
         tones[tone],
-        className
+        className,
       )}
       {...props}
     />
@@ -52,7 +52,8 @@ const leadTones: Record<LeadStatus, Tone> = {
   CLOSED: "neutral",
 };
 
-const titleCase = (value: string) => value.charAt(0) + value.slice(1).toLowerCase();
+const titleCase = (value: string) =>
+  value.charAt(0) + value.slice(1).toLowerCase();
 
 export const OrderStatusBadge = ({ status }: { status: OrderStatus }) => (
   <Badge tone={orderTones[status]}>{titleCase(status)}</Badge>

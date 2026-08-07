@@ -40,9 +40,16 @@ export const metadata: Metadata = {
     "Run 2 to 30 independent desktops from a single PC or server. Cut hardware, electricity and maintenance costs by up to 75% across schools, colleges and small businesses in India.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en-IN" className={`${electrolize.variable} ${roboto.variable} ${spaceMono.variable}`}>
+    <html
+      lang="en-IN"
+      className={`${electrolize.variable} ${roboto.variable} ${spaceMono.variable}`}
+    >
       <body className="flex min-h-screen flex-col font-sans">
         <Providers>
           <SiteHeader />

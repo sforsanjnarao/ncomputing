@@ -63,7 +63,9 @@ export function ProductConfigurator({ product }: { product: Product }) {
                 max={500}
                 value={quantity}
                 onChange={(event) =>
-                  setQuantity(Math.min(500, Math.max(1, Number(event.target.value) || 1)))
+                  setQuantity(
+                    Math.min(500, Math.max(1, Number(event.target.value) || 1)),
+                  )
                 }
                 className="h-11 w-16 border-x border-slate-300 text-center tabular-nums outline-none"
                 aria-label="Quantity"
@@ -88,7 +90,9 @@ export function ProductConfigurator({ product }: { product: Product }) {
                 type="number"
                 min={1}
                 value={seats}
-                onChange={(event) => setSeats(Math.max(1, Number(event.target.value) || 1))}
+                onChange={(event) =>
+                  setSeats(Math.max(1, Number(event.target.value) || 1))
+                }
               />
             )}
           </Field>
@@ -105,7 +109,12 @@ export function ProductConfigurator({ product }: { product: Product }) {
           <Button size="lg" className="w-full" onClick={() => handleAdd(true)}>
             <ShoppingCart className="h-4 w-4" /> Buy now
           </Button>
-          <Button variant="secondary" size="lg" className="w-full" onClick={() => handleAdd(false)}>
+          <Button
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            onClick={() => handleAdd(false)}
+          >
             {added ? (
               <>
                 <Check className="h-4 w-4 text-savings-600" /> Added to cart

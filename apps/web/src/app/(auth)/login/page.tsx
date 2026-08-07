@@ -10,7 +10,11 @@ export default function LoginPage() {
     <AuthCard
       title="Sign in"
       subtitle="Sign in to place an order or track one you have already placed."
-      footer={{ text: "New here?", linkText: "Create an account", href: "/register" }}
+      footer={{
+        text: "New here?",
+        linkText: "Create an account",
+        href: "/register",
+      }}
     >
       {/* useSearchParams needs a Suspense boundary for static rendering. */}
       <Suspense fallback={null}>

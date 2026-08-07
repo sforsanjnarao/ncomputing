@@ -63,11 +63,13 @@ export default function HowItWorksPage() {
           <div className="max-w-2xl">
             <p className="eyebrow">How it works</p>
             <h1 className="heading-1 mt-3">
-              It is simpler than the words &ldquo;desktop virtualisation&rdquo; suggest.
+              It is simpler than the words &ldquo;desktop virtualisation&rdquo;
+              suggest.
             </h1>
             <p className="lead mt-5">
-              One computer does the thinking. Several people use it at once, each with their own
-              screen and keyboard. That is the whole idea — everything else is detail.
+              One computer does the thinking. Several people use it at once,
+              each with their own screen and keyboard. That is the whole idea —
+              everything else is detail.
             </p>
           </div>
         </div>
@@ -77,10 +79,15 @@ export default function HowItWorksPage() {
         <div className="container-page">
           <div className="grid gap-6 sm:grid-cols-2">
             {LAYERS.map((layer) => (
-              <div key={layer.title} className="rounded-2xl border border-slate-200 p-6">
+              <div
+                key={layer.title}
+                className="rounded-2xl border border-slate-200 p-6"
+              >
                 <layer.icon className="h-6 w-6 text-brand-700" />
                 <h2 className="mt-4 text-lg font-semibold">{layer.title}</h2>
-                <p className="mt-2 leading-relaxed text-slate-600">{layer.body}</p>
+                <p className="mt-2 leading-relaxed text-slate-600">
+                  {layer.body}
+                </p>
               </div>
             ))}
           </div>

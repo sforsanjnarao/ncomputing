@@ -13,7 +13,7 @@ export const CreateOrderSchema = z.object({
         quantity: z.number().int().min(1).max(500),
         seats: z.number().int().min(1).optional(),
         serviceDurationMonths: z.number().int().min(1).optional(),
-      })
+      }),
     )
     .min(1, "Your cart is empty."),
 });
@@ -23,4 +23,6 @@ export const AdminListOrdersSchema = z.object({
   status: z.nativeEnum(OrderStatus).optional(),
 });
 
-export const UpdateOrderStatusSchema = z.object({ status: z.nativeEnum(OrderStatus) });
+export const UpdateOrderStatusSchema = z.object({
+  status: z.nativeEnum(OrderStatus),
+});

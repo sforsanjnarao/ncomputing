@@ -26,7 +26,10 @@ export function AuthCard({
         </Card>
         <p className="mt-6 text-center text-sm text-slate-600">
           {footer.text}{" "}
-          <Link href={footer.href} className="font-medium text-brand-700 hover:underline">
+          <Link
+            href={footer.href}
+            className="font-medium text-brand-700 hover:underline"
+          >
             {footer.linkText}
           </Link>
         </p>

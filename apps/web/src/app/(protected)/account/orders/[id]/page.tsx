@@ -30,14 +30,18 @@ export default function OrderDetailPage() {
     return (
       <div className="container-page py-16">
         <p className="text-slate-600">{error}</p>
-        <Link href="/account/orders" className="mt-4 inline-block text-brand-700 hover:underline">
+        <Link
+          href="/account/orders"
+          className="mt-4 inline-block text-brand-700 hover:underline"
+        >
           Back to my orders
         </Link>
       </div>
     );
   }
 
-  if (!order) return <div className="container-page py-16 text-slate-500">Loading…</div>;
+  if (!order)
+    return <div className="container-page py-16 text-slate-500">Loading…</div>;
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -52,10 +56,12 @@ export default function OrderDetailPage() {
         <div className="mt-6 flex items-start gap-3 rounded-2xl border border-savings-600 bg-savings-50 p-5">
           <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-savings-600" />
           <div>
-            <p className="font-semibold text-savings-700">Payment received. Thank you.</p>
+            <p className="font-semibold text-savings-700">
+              Payment received. Thank you.
+            </p>
             <p className="mt-1 text-sm text-savings-700/90">
-              A confirmation has been emailed to you. We will be in touch about dispatch within
-              two working days.
+              A confirmation has been emailed to you. We will be in touch about
+              dispatch within two working days.
             </p>
           </div>
         </div>
@@ -64,7 +70,9 @@ export default function OrderDetailPage() {
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-1">{order.orderNumber}</h1>
-          <p className="mt-1 text-slate-600">Placed {formatDateTime(order.createdAt)}</p>
+          <p className="mt-1 text-slate-600">
+            Placed {formatDateTime(order.createdAt)}
+          </p>
         </div>
         <div className="flex gap-2">
           <PaymentStatusBadge status={order.paymentStatus} />

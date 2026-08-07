@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
@@ -39,13 +46,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { user: loggedIn } = await api.post<{ user: User }>("/auth/login", { email, password });
+    const { user: loggedIn } = await api.post<{ user: User }>("/auth/login", {
+      email,
+      password,
+    });
     setUser(loggedIn);
     return loggedIn;
   }, []);
 
   const register = useCallback(async (input: RegisterInput) => {
-    const { user: created } = await api.post<{ user: User }>("/auth/register", input);
+    const { user: created } = await api.post<{ user: User }>(
+      "/auth/register",
+      input,
+    );
     setUser(created);
     return created;
   }, []);
@@ -60,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ user, loading, login, register, logout }),
-    [user, loading, login, register, logout]
+    [user, loading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,5 +1,9 @@
 import express, { Router } from "express";
-import { adminListLeads, adminUpdateLead, createLead } from "../controllers/lead.controller";
+import {
+  adminListLeads,
+  adminUpdateLead,
+  createLead,
+} from "../controllers/lead.controller";
 import { protectMiddleware, requireAdmin } from "../middleware/protected";
 
 const router: Router = express.Router();

@@ -13,7 +13,7 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
-    public details?: Record<string, string[]>
+    public details?: Record<string, string[]>,
   ) {
     super(message);
   }
@@ -29,7 +29,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const body = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new ApiError(response.status, body.error ?? "Something went wrong.", body.details);
+    throw new ApiError(
+      response.status,
+      body.error ?? "Something went wrong.",
+      body.details,
+    );
   }
 
   return body as T;

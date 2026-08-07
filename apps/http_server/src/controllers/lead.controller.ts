@@ -1,12 +1,21 @@
 import { Request, Response } from "express";
 import { prisma, Prisma } from "@repo/db";
-import { CreateLeadSchema, ListLeadsSchema, UpdateLeadSchema } from "../zod/lead.zod";
+import {
+  CreateLeadSchema,
+  ListLeadsSchema,
+  UpdateLeadSchema,
+} from "../zod/lead.zod";
 import { sendLeadNotification } from "../utils/email";
 
 export const createLead = async (req: Request, res: Response) => {
   const parsed = CreateLeadSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Please check the highlighted fields.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Please check the highlighted fields.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
 
   try {
@@ -26,7 +35,12 @@ export const createLead = async (req: Request, res: Response) => {
 export const adminListLeads = async (req: Request, res: Response) => {
   const parsed = ListLeadsSchema.safeParse(req.query);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid filters.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid filters.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
 
   try {
@@ -42,7 +56,10 @@ export const adminListLeads = async (req: Request, res: Response) => {
       ];
     }
 
-    const leads = await prisma.lead.findMany({ where, orderBy: { createdAt: "desc" } });
+    const leads = await prisma.lead.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
     return res.status(200).json({ leads });
   } catch (err) {
     console.error(err);
@@ -53,14 +70,25 @@ export const adminListLeads = async (req: Request, res: Response) => {
 export const adminUpdateLead = async (req: Request, res: Response) => {
   const parsed = UpdateLeadSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid status.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid status.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
 
   try {
-    const exists = await prisma.lead.findUnique({ where: { id: req.params.id } });
-    if (!exists) return res.status(404).json({ error: "That lead does not exist." });
+    const exists = await prisma.lead.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!exists)
+      return res.status(404).json({ error: "That lead does not exist." });
 
-    const lead = await prisma.lead.update({ where: { id: req.params.id }, data: { status: parsed.data.status } });
+    const lead = await prisma.lead.update({
+      where: { id: req.params.id },
+      data: { status: parsed.data.status },
+    });
     return res.status(200).json({ lead });
   } catch (err) {
     console.error(err);

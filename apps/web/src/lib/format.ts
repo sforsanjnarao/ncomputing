@@ -1,5 +1,8 @@
 /** Money is passed around as a plain rupee amount everywhere, matching the database. */
-export function formatInr(amount: number, options?: { compact?: boolean }): string {
+export function formatInr(
+  amount: number,
+  options?: { compact?: boolean },
+): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",

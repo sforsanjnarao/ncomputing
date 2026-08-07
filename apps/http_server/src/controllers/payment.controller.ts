@@ -39,7 +39,9 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
     include: { items: { include: { product: true } }, user: true },
   });
 
-  sendOrderConfirmation(updated).catch((err) => console.error("order confirmation email failed", err));
+  sendOrderConfirmation(updated).catch((err) =>
+    console.error("order confirmation email failed", err),
+  );
 
   return updated;
 }
@@ -53,13 +55,24 @@ export const createPayment = async (req: Request, res: Response) => {
 
   const parsed = CreatePaymentSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid request.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid request.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
-  if (!razorpay) return res.status(503).json({ error: "Payments are not configured on this server yet." });
+  if (!razorpay)
+    return res
+      .status(503)
+      .json({ error: "Payments are not configured on this server yet." });
 
   try {
-    const order = await prisma.order.findUnique({ where: { id: parsed.data.orderId } });
-    if (!order) return res.status(404).json({ error: "That order does not exist." });
+    const order = await prisma.order.findUnique({
+      where: { id: parsed.data.orderId },
+    });
+    if (!order)
+      return res.status(404).json({ error: "That order does not exist." });
     if (req.user!.role !== Role.ADMIN && order.userId !== userId) {
       return res.status(403).json({ error: "forbidden" });
     }
@@ -89,7 +102,10 @@ export const createPayment = async (req: Request, res: Response) => {
       notes: { orderId: order.id },
     });
 
-    await prisma.order.update({ where: { id: order.id }, data: { razorpayOrderId: gatewayOrder.id } });
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { razorpayOrderId: gatewayOrder.id },
+    });
 
     return res.status(200).json({
       keyId: RAZORPAY_KEY_ID,
@@ -108,22 +124,38 @@ export const createPayment = async (req: Request, res: Response) => {
 export const verifyPayment = async (req: Request, res: Response) => {
   const parsed = VerifyPaymentSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid request.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid request.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
-  if (!RAZORPAY_KEY_SECRET) return res.status(503).json({ error: "Payments are not configured on this server yet." });
+  if (!RAZORPAY_KEY_SECRET)
+    return res
+      .status(503)
+      .json({ error: "Payments are not configured on this server yet." });
 
   try {
     const expected = crypto
       .createHmac("sha256", RAZORPAY_KEY_SECRET)
-      .update(`${parsed.data.razorpay_order_id}|${parsed.data.razorpay_payment_id}`)
+      .update(
+        `${parsed.data.razorpay_order_id}|${parsed.data.razorpay_payment_id}`,
+      )
       .digest("hex");
 
     if (expected !== parsed.data.razorpay_signature) {
-      return res.status(400).json({ error: "Payment signature could not be verified." });
+      return res
+        .status(400)
+        .json({ error: "Payment signature could not be verified." });
     }
 
-    const order = await markPaid(parsed.data.razorpay_order_id, parsed.data.razorpay_payment_id);
-    if (!order) return res.status(404).json({ error: "Unknown payment reference." });
+    const order = await markPaid(
+      parsed.data.razorpay_order_id,
+      parsed.data.razorpay_payment_id,
+    );
+    if (!order)
+      return res.status(404).json({ error: "Unknown payment reference." });
 
     return res.status(200).json({ order });
   } catch (err) {
@@ -135,13 +167,18 @@ export const verifyPayment = async (req: Request, res: Response) => {
 // Server-to-server confirmation. The browser callback can be lost (tab closed,
 // network dropped) — the webhook is what makes the flow reliable.
 export const paymentWebhook = async (req: Request, res: Response) => {
-  if (!RAZORPAY_WEBHOOK_SECRET) return res.status(503).json({ error: "Webhook secret is not configured." });
+  if (!RAZORPAY_WEBHOOK_SECRET)
+    return res.status(503).json({ error: "Webhook secret is not configured." });
 
-  const rawBody = (req as Request & { rawBody?: string }).rawBody ?? JSON.stringify(req.body);
+  const rawBody =
+    (req as Request & { rawBody?: string }).rawBody ?? JSON.stringify(req.body);
   const signature = req.headers["x-razorpay-signature"] as string | undefined;
 
   try {
-    const expected = crypto.createHmac("sha256", RAZORPAY_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    const expected = crypto
+      .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest("hex");
     if (!signature || expected !== signature) {
       return res.status(403).json({ error: "Invalid webhook signature." });
     }

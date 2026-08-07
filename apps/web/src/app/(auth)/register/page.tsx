@@ -9,7 +9,11 @@ export default function RegisterPage() {
     <AuthCard
       title="Create an account"
       subtitle="You need an account to place an order, so we can show you its status later."
-      footer={{ text: "Already have one?", linkText: "Sign in", href: "/login" }}
+      footer={{
+        text: "Already have one?",
+        linkText: "Sign in",
+        href: "/login",
+      }}
     >
       <RegisterForm />
     </AuthCard>

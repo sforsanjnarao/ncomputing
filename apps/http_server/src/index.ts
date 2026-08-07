@@ -13,11 +13,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: (process.env.CORS_ORIGIN || "http://localhost:3000").split(",").map((o) => o.trim()),
+    origin: (process.env.CORS_ORIGIN || "http://localhost:3000")
+      .split(",")
+      .map((o) => o.trim()),
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(
@@ -25,9 +27,10 @@ app.use(
     // Razorpay signs the exact bytes it sent, so webhook verification needs the
     // untouched body. Stash it while parsing instead of a separate raw route.
     verify: (req, _res, buf) => {
-      (req as express.Request & { rawBody?: string }).rawBody = buf.toString("utf8");
+      (req as express.Request & { rawBody?: string }).rawBody =
+        buf.toString("utf8");
     },
-  })
+  }),
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

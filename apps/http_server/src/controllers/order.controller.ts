@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { prisma, Prisma, Role } from "@repo/db";
-import { CreateOrderSchema, AdminListOrdersSchema, UpdateOrderStatusSchema } from "../zod/order.zod";
+import {
+  CreateOrderSchema,
+  AdminListOrdersSchema,
+  UpdateOrderStatusSchema,
+} from "../zod/order.zod";
 import { AddressInput } from "../zod/address.zod";
 
 const orderInclude = {
@@ -13,7 +17,7 @@ const orderInclude = {
 function generateOrderNumber() {
   const now = new Date();
   const date = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(
-    now.getDate()
+    now.getDate(),
   ).padStart(2, "0")}`;
   const random = Math.random().toString(36).slice(2, 7).toUpperCase();
   return `NC-${date}-${random}`;
@@ -41,13 +45,21 @@ export const createOrder = async (req: Request, res: Response) => {
 
   const parsed = CreateOrderSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Please check the highlighted fields.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Please check the highlighted fields.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
   const input = parsed.data;
 
   try {
     const products = await prisma.product.findMany({
-      where: { id: { in: input.items.map((item) => item.productId) }, isActive: true },
+      where: {
+        id: { in: input.items.map((item) => item.productId) },
+        isActive: true,
+      },
     });
 
     let orderAmount = 0;
@@ -55,9 +67,15 @@ export const createOrder = async (req: Request, res: Response) => {
     const lines = [];
 
     for (const item of input.items) {
-      const product = products.find((candidate) => candidate.id === item.productId);
+      const product = products.find(
+        (candidate) => candidate.id === item.productId,
+      );
       if (!product) {
-        return res.status(400).json({ error: "One of the products in your cart is no longer available." });
+        return res
+          .status(400)
+          .json({
+            error: "One of the products in your cart is no longer available.",
+          });
       }
       if (product.type === "HARDWARE") needsShipping = true;
 
@@ -73,7 +91,9 @@ export const createOrder = async (req: Request, res: Response) => {
     orderAmount = Math.round(orderAmount * 100) / 100;
 
     if (needsShipping && !input.shippingAddress) {
-      return res.status(400).json({ error: "Shipping address is required for hardware orders." });
+      return res
+        .status(400)
+        .json({ error: "Shipping address is required for hardware orders." });
     }
 
     const billingAddressId = await resolveAddress(userId, input.billingAddress);
@@ -127,8 +147,12 @@ export const getOrder = async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ error: "unauthorized" });
 
   try {
-    const order = await prisma.order.findUnique({ where: { id: req.params.id }, include: orderInclude });
-    if (!order) return res.status(404).json({ error: "That order does not exist." });
+    const order = await prisma.order.findUnique({
+      where: { id: req.params.id },
+      include: orderInclude,
+    });
+    if (!order)
+      return res.status(404).json({ error: "That order does not exist." });
     if (req.user!.role !== Role.ADMIN && order.userId !== userId) {
       return res.status(403).json({ error: "forbidden" });
     }
@@ -142,7 +166,12 @@ export const getOrder = async (req: Request, res: Response) => {
 export const adminListOrders = async (req: Request, res: Response) => {
   const parsed = AdminListOrdersSchema.safeParse(req.query);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid filters.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid filters.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
 
   try {
@@ -157,7 +186,11 @@ export const adminListOrders = async (req: Request, res: Response) => {
       ];
     }
 
-    const orders = await prisma.order.findMany({ where, orderBy: { createdAt: "desc" }, include: orderInclude });
+    const orders = await prisma.order.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: orderInclude,
+    });
     return res.status(200).json({ orders });
   } catch (err) {
     console.error(err);
@@ -168,12 +201,20 @@ export const adminListOrders = async (req: Request, res: Response) => {
 export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
   const parsed = UpdateOrderStatusSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid status.", details: parsed.error.flatten().fieldErrors });
+    return res
+      .status(400)
+      .json({
+        error: "Invalid status.",
+        details: parsed.error.flatten().fieldErrors,
+      });
   }
 
   try {
-    const exists = await prisma.order.findUnique({ where: { id: req.params.id } });
-    if (!exists) return res.status(404).json({ error: "That order does not exist." });
+    const exists = await prisma.order.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!exists)
+      return res.status(404).json({ error: "That order does not exist." });
 
     const order = await prisma.order.update({
       where: { id: req.params.id },

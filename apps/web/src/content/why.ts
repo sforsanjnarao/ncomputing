@@ -23,8 +23,10 @@ export type WhyContent = {
 export const WHY_CONTENT: Record<string, WhyContent> = {
   "rx420-rdp": {
     slug: "rx420-rdp",
-    audience: "IT teams who have already moved desktops to Microsoft AVD, RDS or another cloud/VDI platform",
-    problemTitle: "Your desktop already lives in the cloud. The box under the desk still doesn't.",
+    audience:
+      "IT teams who have already moved desktops to Microsoft AVD, RDS or another cloud/VDI platform",
+    problemTitle:
+      "Your desktop already lives in the cloud. The box under the desk still doesn't.",
     problemBody:
       "If you're running Microsoft AVD, RDS or a VDI platform, the actual computing already happens somewhere else — a data centre, not the desk. A full Windows PC sitting there is now an expensive, power-hungry way to open a remote session, and it still needs patching, still fails, and still has a hard disk somebody could walk off with.",
     symptoms: [
@@ -49,10 +51,22 @@ export const WHY_CONTENT: Record<string, WhyContent> = {
     solutionBody:
       "The RX420(RDP) is a small, low-power device built to do exactly one job well: get you onto Microsoft AVD, RDS, VERDE VDI or vSpace Pro Enterprise, fast, with nothing stored locally. If a unit is lost, nothing goes with it — there was never any company data on it to begin with.",
     steps: [
-      { title: "Point it at your platform", body: "Configure the AVD, RDS or VDI endpoint once, centrally, before it ever reaches a desk." },
-      { title: "Hand it to the user", body: "They plug in two monitors, sign in, and their existing desktop is exactly where they left it." },
-      { title: "Manage it remotely", body: "Updates and settings roll out to every device from one place — nobody visits a desk to patch it." },
-      { title: "Swap, don't repair", body: "A failed unit is replaced from a spare in minutes. The virtual desktop behind it is untouched." },
+      {
+        title: "Point it at your platform",
+        body: "Configure the AVD, RDS or VDI endpoint once, centrally, before it ever reaches a desk.",
+      },
+      {
+        title: "Hand it to the user",
+        body: "They plug in two monitors, sign in, and their existing desktop is exactly where they left it.",
+      },
+      {
+        title: "Manage it remotely",
+        body: "Updates and settings roll out to every device from one place — nobody visits a desk to patch it.",
+      },
+      {
+        title: "Swap, don't repair",
+        body: "A failed unit is replaced from a spare in minutes. The virtual desktop behind it is untouched.",
+      },
     ],
     bestFor: [
       "Organisations already on Microsoft AVD, RDS or VERDE VDI",
@@ -66,8 +80,10 @@ export const WHY_CONTENT: Record<string, WhyContent> = {
 
   "rx540-rx580": {
     slug: "rx540-rx580",
-    audience: "IT teams standardising on one endpoint across several virtualization platforms, or replacing ageing thin clients",
-    problemTitle: "Every platform you support needs its own box on the desk — until now.",
+    audience:
+      "IT teams standardising on one endpoint across several virtualization platforms, or replacing ageing thin clients",
+    problemTitle:
+      "Every platform you support needs its own box on the desk — until now.",
     problemBody:
       "Modern workplaces rarely run just one thing. One team is on Citrix, another on Microsoft AVD, a third still dials into an on-prem RDS server, and someone in finance just got moved to Windows 365. Standardising on hardware used to mean picking a lane. Sticking with an older thin client generation means living with a single lower-resolution monitor while everyone else has moved on to dual 4K.",
     symptoms: [
@@ -92,10 +108,22 @@ export const WHY_CONTENT: Record<string, WhyContent> = {
     solutionBody:
       "Built on the Raspberry Pi Compute Module 5, the RX540 (and its 8 GB RX580 sibling) is NComputing's fastest endpoint yet — a genuine generational leap in CPU and graphics performance over the previous RX line. It talks to Citrix, Omnissa Horizon, Microsoft AVD, Windows 365 and plain RDP, so the same box works whichever platform a given team happens to be on.",
     steps: [
-      { title: "Choose your memory", body: "RX540 for standard use, or the 8 GB RX580 for teams pushing more demanding remote sessions." },
-      { title: "Connect to any platform", body: "Citrix, Horizon, AVD, Windows 365 or RDP — configured once, centrally, per device." },
-      { title: "Give them dual 4K", body: "Two 3840x2160 displays over HDMI, at a resolution older RX devices simply cannot drive." },
-      { title: "Bolt it down", body: "A Kensington lock slot and VESA mount kit for reception desks, labs and other shared spaces." },
+      {
+        title: "Choose your memory",
+        body: "RX540 for standard use, or the 8 GB RX580 for teams pushing more demanding remote sessions.",
+      },
+      {
+        title: "Connect to any platform",
+        body: "Citrix, Horizon, AVD, Windows 365 or RDP — configured once, centrally, per device.",
+      },
+      {
+        title: "Give them dual 4K",
+        body: "Two 3840x2160 displays over HDMI, at a resolution older RX devices simply cannot drive.",
+      },
+      {
+        title: "Bolt it down",
+        body: "A Kensington lock slot and VESA mount kit for reception desks, labs and other shared spaces.",
+      },
     ],
     bestFor: [
       "Organisations running more than one virtualization platform",
@@ -109,7 +137,8 @@ export const WHY_CONTENT: Record<string, WhyContent> = {
 
   "vspace-pro-client": {
     slug: "vspace-pro-client",
-    audience: "IT teams with existing PCs, laptops or a remote/BYOD workforce who don't want to buy new hardware for every seat",
+    audience:
+      "IT teams with existing PCs, laptops or a remote/BYOD workforce who don't want to buy new hardware for every seat",
     problemTitle: "Not every seat needs a new box. Some just need a way in.",
     problemBody:
       "A thin client is the right answer when you're setting up a desk from nothing. But plenty of seats aren't that — they're a PC that already exists, a laptop someone brought from home, or a lab machine that's too old to run a current version of Windows but is otherwise perfectly fine. Buying new hardware for those seats is money spent solving a problem you don't actually have.",
@@ -128,17 +157,29 @@ export const WHY_CONTENT: Record<string, WhyContent> = {
       },
       {
         title: "BYOD policies exist on paper, not in practice",
-        body: "Without a client to install, \"bring your own device\" just means IT has no idea what's actually connecting.",
+        body: 'Without a client to install, "bring your own device" just means IT has no idea what\'s actually connecting.',
       },
     ],
     solutionTitle: "Turn the PC that's already there into the way in.",
     solutionBody:
       "vSpace Pro Client is software, not hardware — install it on an existing Windows 7 SP1, 8.1 or 10 machine and it becomes an access point to your centrally managed vSpace Pro desktop, over LAN or Wi-Fi. No new box, no new warranty, no new asset tag. Just a working PC doing one more useful thing.",
     steps: [
-      { title: "Install on the existing machine", body: "Any PC meeting the minimum spec — Pentium 4 class, 2 GB RAM — is good enough." },
-      { title: "Connect to your vSpace Pro Server", body: "Over the office LAN, or Wi-Fi for a laptop working from anywhere." },
-      { title: "Sign in to the managed desktop", body: "The same centrally managed desktop everyone else on vSpace Pro is using." },
-      { title: "IT manages the desktop, not the PC", body: "Updates and policy live on the vSpace Pro Server — the local machine barely matters anymore." },
+      {
+        title: "Install on the existing machine",
+        body: "Any PC meeting the minimum spec — Pentium 4 class, 2 GB RAM — is good enough.",
+      },
+      {
+        title: "Connect to your vSpace Pro Server",
+        body: "Over the office LAN, or Wi-Fi for a laptop working from anywhere.",
+      },
+      {
+        title: "Sign in to the managed desktop",
+        body: "The same centrally managed desktop everyone else on vSpace Pro is using.",
+      },
+      {
+        title: "IT manages the desktop, not the PC",
+        body: "Updates and policy live on the vSpace Pro Server — the local machine barely matters anymore.",
+      },
     ],
     bestFor: [
       "Extending the useful life of PCs too old for a current OS",

@@ -20,7 +20,9 @@ export function RegisterForm() {
     setErrors({});
     setFormError(null);
 
-    const data = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
+    const data = Object.fromEntries(
+      new FormData(event.currentTarget),
+    ) as Record<string, string>;
 
     try {
       await register({
@@ -33,8 +35,13 @@ export function RegisterForm() {
       router.push("/account/orders");
       router.refresh();
     } catch (caught) {
-      if (caught instanceof ApiError && caught.details) setErrors(caught.details);
-      setFormError(caught instanceof ApiError ? caught.message : "Could not create the account.");
+      if (caught instanceof ApiError && caught.details)
+        setErrors(caught.details);
+      setFormError(
+        caught instanceof ApiError
+          ? caught.message
+          : "Could not create the account.",
+      );
       setSubmitting(false);
     }
   }
@@ -42,22 +49,51 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="Your name" error={errors.name?.[0]}>
-        {(props) => <Input {...props} name="name" required autoComplete="name" />}
+        {(props) => (
+          <Input {...props} name="name" required autoComplete="name" />
+        )}
       </Field>
       <Field label="Email" error={errors.email?.[0]}>
-        {(props) => <Input {...props} name="email" type="email" required autoComplete="email" />}
+        {(props) => (
+          <Input
+            {...props}
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+          />
+        )}
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Mobile" error={errors.phone?.[0]}>
-          {(props) => <Input {...props} name="phone" inputMode="numeric" autoComplete="tel" />}
+          {(props) => (
+            <Input
+              {...props}
+              name="phone"
+              inputMode="numeric"
+              autoComplete="tel"
+            />
+          )}
         </Field>
         <Field label="Organisation" error={errors.organization?.[0]}>
-          {(props) => <Input {...props} name="organization" autoComplete="organization" />}
+          {(props) => (
+            <Input {...props} name="organization" autoComplete="organization" />
+          )}
         </Field>
       </div>
-      <Field label="Password" hint="At least 8 characters." error={errors.password?.[0]}>
+      <Field
+        label="Password"
+        hint="At least 8 characters."
+        error={errors.password?.[0]}
+      >
         {(props) => (
-          <Input {...props} name="password" type="password" required autoComplete="new-password" />
+          <Input
+            {...props}
+            name="password"
+            type="password"
+            required
+            autoComplete="new-password"
+          />
         )}
       </Field>
 

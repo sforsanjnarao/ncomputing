@@ -35,7 +35,9 @@ export function LeadDialog({
     setSubmitting(true);
     setError(null);
 
-    const data = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
+    const data = Object.fromEntries(
+      new FormData(event.currentTarget),
+    ) as Record<string, string>;
 
     try {
       await api.post("/leads", {
@@ -50,7 +52,11 @@ export function LeadDialog({
       });
       setSent(true);
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : "Could not send that. Please try again.");
+      setError(
+        caught instanceof ApiError
+          ? caught.message
+          : "Could not send that. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -63,25 +69,42 @@ export function LeadDialog({
   }
 
   return (
-    <Modal open={open} onClose={handleClose} title={title} description={description}>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      title={title}
+      description={description}
+    >
       {sent ? (
         <div className="py-4 text-center">
           <p className="font-medium text-savings-700">Thanks — we have it.</p>
-          <p className="mt-1 text-sm text-slate-600">Our team will get back to you within a working day.</p>
+          <p className="mt-1 text-sm text-slate-600">
+            Our team will get back to you within a working day.
+          </p>
           <Button className="mt-4" onClick={handleClose}>
             Close
           </Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Field label="Name">{(props) => <Input {...props} name="name" required />}</Field>
+          <Field label="Name">
+            {(props) => <Input {...props} name="name" required />}
+          </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Email">
-              {(props) => <Input {...props} name="email" type="email" required />}
+              {(props) => (
+                <Input {...props} name="email" type="email" required />
+              )}
             </Field>
             <Field label="Mobile">
               {(props) => (
-                <Input {...props} name="phone" required inputMode="numeric" placeholder="9876543210" />
+                <Input
+                  {...props}
+                  name="phone"
+                  required
+                  inputMode="numeric"
+                  placeholder="9876543210"
+                />
               )}
             </Field>
           </div>
@@ -91,7 +114,13 @@ export function LeadDialog({
             </Field>
             <Field label="Seats (optional)">
               {(props) => (
-                <Input {...props} name="seats" type="number" min={1} defaultValue={defaultSeats} />
+                <Input
+                  {...props}
+                  name="seats"
+                  type="number"
+                  min={1}
+                  defaultValue={defaultSeats}
+                />
               )}
             </Field>
           </div>
@@ -101,7 +130,12 @@ export function LeadDialog({
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full"
+            disabled={submitting}
+          >
             {submitting ? "Sending…" : "Send"}
           </Button>
         </form>

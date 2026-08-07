@@ -7,16 +7,38 @@ import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import { api, ApiError } from "@/lib/api";
 import { formatInr } from "@/lib/format";
-import { loadRazorpayScript, openRazorpayCheckout, RazorpaySuccess } from "@/lib/razorpay";
+import {
+  loadRazorpayScript,
+  openRazorpayCheckout,
+  RazorpaySuccess,
+} from "@/lib/razorpay";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { Address, Order } from "@/lib/types";
 
 const STATES = [
-  "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat", "Haryana",
-  "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra",
-  "Odisha", "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh", "Uttarakhand",
+  "Andhra Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Tamil Nadu",
+  "Telangana",
+  "Uttar Pradesh",
+  "Uttarakhand",
   "West Bengal",
 ];
 
@@ -35,7 +57,10 @@ export default function CheckoutPage() {
   // does not have to retype it — they can just confirm or tweak it.
   const savedAddress = user?.addresses?.[0];
 
-  const needsShipping = useMemo(() => lines.some((line) => line.type === "HARDWARE"), [lines]);
+  const needsShipping = useMemo(
+    () => lines.some((line) => line.type === "HARDWARE"),
+    [lines],
+  );
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -49,7 +74,10 @@ export default function CheckoutPage() {
     if (hydrated && lines.length === 0) router.replace("/cart");
   }, [hydrated, lines.length, router]);
 
-  function readAddress(data: Record<string, string>, prefix: "shipping" | "billing") {
+  function readAddress(
+    data: Record<string, string>,
+    prefix: "shipping" | "billing",
+  ) {
     return {
       fullName: data[`${prefix}FullName`],
       fullAddress: data[`${prefix}FullAddress`],
@@ -66,13 +94,17 @@ export default function CheckoutPage() {
     setErrors({});
     setFormError(null);
 
-    const data = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
+    const data = Object.fromEntries(
+      new FormData(event.currentTarget),
+    ) as Record<string, string>;
     // Only the fields actually rendered exist in the form: when there is no
     // shipping section, the "billing" fields are the only ones on the page.
     const billingAddress = needsShipping
       ? readAddress(data, sameAsShipping ? "shipping" : "billing")
       : readAddress(data, "billing");
-    const shippingAddress = needsShipping ? readAddress(data, "shipping") : undefined;
+    const shippingAddress = needsShipping
+      ? readAddress(data, "shipping")
+      : undefined;
 
     try {
       // 1. Create the order. The API prices it from its own catalogue — the
@@ -88,10 +120,15 @@ export default function CheckoutPage() {
       });
 
       // 2. Ask the API to open a Razorpay order for that amount.
-      const payment = await api.post<PaymentInit>("/payments/create-order", { orderId: order.id });
+      const payment = await api.post<PaymentInit>("/payments/create-order", {
+        orderId: order.id,
+      });
 
       const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) throw new Error("Could not load the payment window. Check your connection.");
+      if (!scriptLoaded)
+        throw new Error(
+          "Could not load the payment window. Check your connection.",
+        );
 
       // 3. Hand over to Razorpay. Note the order already exists in our database
       //    as PENDING — if the user abandons here, we still have the record.
@@ -118,20 +155,21 @@ export default function CheckoutPage() {
             router.push(`/account/orders/${order.id}?placed=1`);
           } catch {
             setFormError(
-              "Payment went through but we could not confirm it here. Check My orders in a moment — our webhook will update it."
+              "Payment went through but we could not confirm it here. Check My orders in a moment — our webhook will update it.",
             );
             setSubmitting(false);
           }
         },
       });
     } catch (caught) {
-      if (caught instanceof ApiError && caught.details) setErrors(caught.details);
+      if (caught instanceof ApiError && caught.details)
+        setErrors(caught.details);
       setFormError(
         caught instanceof ApiError
           ? caught.message
           : caught instanceof Error
             ? caught.message
-            : "Could not start checkout."
+            : "Could not start checkout.",
       );
       setSubmitting(false);
     }
@@ -143,7 +181,10 @@ export default function CheckoutPage() {
     <div className="container-page py-10 sm:py-14">
       <h1 className="heading-1">Checkout</h1>
 
-      <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-[1fr,22rem] lg:items-start">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-8 grid gap-8 lg:grid-cols-[1fr,22rem] lg:items-start"
+      >
         <div className="space-y-6">
           {needsShipping && (
             <>
@@ -182,7 +223,10 @@ export default function CheckoutPage() {
 
             <ul className="space-y-3 border-b border-slate-200 pb-4">
               {lines.map((line) => (
-                <li key={line.key} className="flex justify-between gap-3 text-sm">
+                <li
+                  key={line.key}
+                  className="flex justify-between gap-3 text-sm"
+                >
                   <span>
                     <span className="font-medium">{line.name}</span>
                     <span className="text-slate-500"> × {line.quantity}</span>
@@ -201,18 +245,28 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold">
                 <dt>Total</dt>
-                <dd className="font-mono tabular-nums">{formatInr(totalAmount)}</dd>
+                <dd className="font-mono tabular-nums">
+                  {formatInr(totalAmount)}
+                </dd>
               </div>
             </dl>
 
             {formError && <p className="text-sm text-red-600">{formError}</p>}
 
-            <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-              {submitting ? "Opening payment…" : `Pay ${formatInr(totalAmount)}`}
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={submitting}
+            >
+              {submitting
+                ? "Opening payment…"
+                : `Pay ${formatInr(totalAmount)}`}
             </Button>
 
             <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
-              <Lock className="h-3.5 w-3.5" /> Payment handled by Razorpay. We never see your card.
+              <Lock className="h-3.5 w-3.5" /> Payment handled by Razorpay. We
+              never see your card.
             </p>
           </CardBody>
         </Card>
@@ -265,7 +319,12 @@ function AddressFields({
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="City">
             {(props) => (
-              <Input {...props} name={`${prefix}City`} required defaultValue={defaultAddress?.city} />
+              <Input
+                {...props}
+                name={`${prefix}City`}
+                required
+                defaultValue={defaultAddress?.city}
+              />
             )}
           </Field>
           <Field label="State">

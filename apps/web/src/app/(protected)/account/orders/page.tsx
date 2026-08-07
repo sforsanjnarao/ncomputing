@@ -23,7 +23,9 @@ export default function MyOrdersPage() {
   return (
     <div className="container-page py-10 sm:py-14">
       <h1 className="heading-1">My orders</h1>
-      <p className="mt-2 text-slate-600">Everything you have ordered, and where each one is.</p>
+      <p className="mt-2 text-slate-600">
+        Everything you have ordered, and where each one is.
+      </p>
 
       {orders === null ? (
         <p className="mt-8 text-slate-500">Loading…</p>
@@ -33,7 +35,8 @@ export default function MyOrdersPage() {
             <Package className="h-10 w-10 text-slate-300" />
             <p className="mt-4 font-medium">No orders yet</p>
             <p className="mt-1 max-w-sm text-sm text-slate-600">
-              Once you place an order it will appear here with its delivery status.
+              Once you place an order it will appear here with its delivery
+              status.
             </p>
             <ButtonLink href="/products" className="mt-6">
               Browse products
@@ -51,14 +54,22 @@ export default function MyOrdersPage() {
                       <p className="font-semibold">{order.orderNumber}</p>
                       <p className="mt-1 text-sm text-slate-600">
                         {formatDate(order.createdAt)} ·{" "}
-                        {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
+                        {order.items.reduce(
+                          (sum, item) => sum + item.quantity,
+                          0,
+                        )}{" "}
+                        items
                       </p>
                       <p className="mt-1 text-sm text-slate-500">
-                        {order.items.map((item) => item.product.name).join(", ")}
+                        {order.items
+                          .map((item) => item.product.name)
+                          .join(", ")}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-                      <p className="font-semibold tabular-nums">{formatInr(order.orderAmount)}</p>
+                      <p className="font-semibold tabular-nums">
+                        {formatInr(order.orderAmount)}
+                      </p>
                       <div className="flex gap-2">
                         <PaymentStatusBadge status={order.paymentStatus} />
                         <OrderStatusBadge status={order.status} />

@@ -13,7 +13,11 @@ import { AdminNav } from "./admin-nav";
  * The parent (protected) layout already guarantees a signed-in user; here we
  * only add the role check.
  */
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -36,7 +40,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNav />
-      <div className="mx-auto w-full max-w-content px-5 py-8 sm:px-6 lg:px-8">{children}</div>
+      <div className="mx-auto w-full max-w-content px-5 py-8 sm:px-6 lg:px-8">
+        {children}
+      </div>
     </div>
   );
 }

@@ -19,12 +19,18 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
 
         <h3 className="mt-4 text-lg font-semibold">{product.name}</h3>
-        <p className="mt-1 text-sm font-medium text-brand-700">{product.tagline}</p>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">{product.summary}</p>
+        <p className="mt-1 text-sm font-medium text-brand-700">
+          {product.tagline}
+        </p>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
+          {product.summary}
+        </p>
 
         <div className="mt-5 border-t border-slate-200 pt-4">
           <p className="text-xs text-slate-500">Starting at</p>
-          <p className="font-mono text-2xl font-semibold tabular-nums">{formatInr(product.amount)}</p>
+          <p className="font-mono text-2xl font-semibold tabular-nums">
+            {formatInr(product.amount)}
+          </p>
         </div>
 
         {/* The "why" page comes first on purpose: this buyer needs the problem
