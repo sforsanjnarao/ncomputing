@@ -1,0 +1,22 @@
+# Optional: a local Postgres for development if you would rather not point at
+# Neon while building. Neon is what the deployed app uses.
+#
+#   docker compose up -d
+#   DATABASE_URL="postgresql://ncomputing:ncomputing@localhost:5432/ncomputing"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ncomputing-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ncomputing
+      POSTGRES_PASSWORD: ncomputing
+      POSTGRES_DB: ncomputing
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
