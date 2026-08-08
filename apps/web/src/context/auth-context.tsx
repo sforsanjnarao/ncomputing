@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { useCart } from "@/context/cart-context";
 import type { User } from "@/lib/types";
 
 type RegisterInput = {
@@ -34,9 +35,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const cart = useCart();
 
-  // The session cookie is httpOnly, so the client cannot inspect it. Asking the
-  // API who we are is the only way to know.
   useEffect(() => {
     api
       .get<{ user: User }>("/auth/me")
@@ -66,10 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     await api.post("/auth/logout");
     setUser(null);
-    // Refresh so server components and middleware see the cleared cookie.
+    cart.clear();
     router.push("/");
     router.refresh();
-  }, [router]);
+  }, [router, cart]);
 
   const value = useMemo(
     () => ({ user, loading, login, register, logout }),
