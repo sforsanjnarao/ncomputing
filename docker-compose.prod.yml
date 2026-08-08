@@ -92,6 +92,29 @@ services:
     depends_on:
       - http_server
 
+  # Terminates TLS for $DOMAIN and puts web + http_server on one public
+  # origin (web on /, the API on /api/* and /health) — required because
+  # CORS_ORIGIN and NEXT_PUBLIC_API_URL above both assume a single https
+  # origin, and neither app service does TLS itself.
+  caddy:
+    image: caddy:2-alpine
+    container_name: ncomputing_caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: "${DOMAIN}"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data_prod:/data
+      - caddy_config_prod:/config
+    depends_on:
+      - web
+      - http_server
+
 volumes:
   postgres_data_prod:
   redis_data_prod:
+  caddy_data_prod:
+  caddy_config_prod:

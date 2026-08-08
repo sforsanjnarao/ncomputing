@@ -1,0 +1,16 @@
+# Secrets — must never enter a build context. The Dockerfiles' `rm -f .env`
+# only deletes these from the final layer; an earlier COPY layer would still
+# contain them in plaintext, recoverable via `docker history`/`docker save`.
+.env
+.env.*
+!.env.example
+
+node_modules
+.git
+.turbo
+.next
+dist
+generated
+coverage
+*.log
+.DS_Store

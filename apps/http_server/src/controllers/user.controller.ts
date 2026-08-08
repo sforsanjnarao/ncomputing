@@ -6,6 +6,15 @@ import { RegisterSchema, LoginSchema } from "../zod/user.zod";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
+
+const AUTH_COOKIE_OPTIONS = {
+  secure: process.env.NODE_ENV === "production",
+  sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as
+    | "none"
+    | "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+};
+
 export const registerController = async (req: Request, res: Response) => {
   const parsed = RegisterSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -36,11 +45,7 @@ export const registerController = async (req: Request, res: Response) => {
     });
 
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET);
-    res.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, AUTH_COOKIE_OPTIONS);
 
     return res.status(201).json({
       user: {
@@ -87,11 +92,7 @@ export const loginController = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET);
-    res.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, AUTH_COOKIE_OPTIONS);
 
     return res.status(200).json({
       user: {
