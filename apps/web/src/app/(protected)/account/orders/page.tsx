@@ -1,24 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Package } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatDate, formatInr } from "@/lib/format";
 import { Card, CardBody } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
 import type { Order } from "@/lib/types";
+
+type MyOrdersResponse = { orders: Order[]; total: number; pageSize: number };
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useState(1);
+
+  const load = useCallback(() => {
+    api
+      .get<MyOrdersResponse>(`/orders/mine?page=${page}`)
+      .then((data) => {
+        setOrders(data.orders);
+        setTotal(data.total);
+        setPageSize(data.pageSize);
+      })
+      .catch(() => setOrders([]));
+  }, [page]);
 
   useEffect(() => {
-    api
-      .get<{ orders: Order[] }>("/orders/mine")
-      .then((data) => setOrders(data.orders))
-      .catch(() => setOrders([]));
-  }, []);
+    load();
+  }, [load]);
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -44,43 +58,53 @@ export default function MyOrdersPage() {
           </CardBody>
         </Card>
       ) : (
-        <ul className="mt-8 space-y-4">
-          {orders.map((order) => (
-            <li key={order.id}>
-              <Link href={`/account/orders/${order.id}`} className="block">
-                <Card className="transition-shadow hover:shadow-lg">
-                  <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="font-semibold">{order.orderNumber}</p>
-                      <p className="mt-1 text-sm text-slate-600">
-                        {formatDate(order.createdAt)} ·{" "}
-                        {order.items.reduce(
-                          (sum, item) => sum + item.quantity,
-                          0,
-                        )}{" "}
-                        items
-                      </p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        {order.items
-                          .map((item) => item.product.name)
-                          .join(", ")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-                      <p className="font-semibold tabular-nums">
-                        {formatInr(order.orderAmount)}
-                      </p>
-                      <div className="flex gap-2">
-                        <PaymentStatusBadge status={order.paymentStatus} />
-                        <OrderStatusBadge status={order.status} />
+        <>
+          <ul className="mt-8 space-y-4">
+            {orders.map((order) => (
+              <li key={order.id}>
+                <Link href={`/account/orders/${order.id}`} className="block">
+                  <Card className="transition-shadow hover:shadow-lg">
+                    <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold">{order.orderNumber}</p>
+                        <p className="mt-1 text-sm text-slate-600">
+                          {formatDate(order.createdAt)} ·{" "}
+                          {order.items.reduce(
+                            (sum, item) => sum + item.quantity,
+                            0,
+                          )}{" "}
+                          items
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {order.items
+                            .map((item) => item.product.name)
+                            .join(", ")}
+                        </p>
                       </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                      <div className="flex items-center gap-3 sm:flex-col sm:items-end">
+                        <p className="font-semibold tabular-nums">
+                          {formatInr(order.orderAmount)}
+                        </p>
+                        <div className="flex gap-2">
+                          <PaymentStatusBadge status={order.paymentStatus} />
+                          <OrderStatusBadge status={order.status} />
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Card className="mt-4">
+            <Pagination
+              page={page}
+              total={total}
+              pageSize={pageSize}
+              onChange={setPage}
+            />
+          </Card>
+        </>
       )}
     </div>
   );

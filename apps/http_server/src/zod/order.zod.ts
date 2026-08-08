@@ -21,6 +21,11 @@ export const CreateOrderSchema = z.object({
 export const AdminListOrdersSchema = z.object({
   search: z.string().optional(),
   status: z.nativeEnum(OrderStatus).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+});
+
+export const MyOrdersSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
 });
 
 export const UpdateOrderStatusSchema = z.object({

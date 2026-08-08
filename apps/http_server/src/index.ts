@@ -8,6 +8,7 @@ import productRoute from "./routes/product.routes";
 import orderRoute from "./routes/order.routes";
 import paymentRoute from "./routes/payment.routes";
 import leadRoute from "./routes/lead.routes";
+import { apiLimiter } from "./rateLimit";
 
 const app = express();
 
@@ -24,8 +25,7 @@ app.use(
 
 app.use(
   express.json({
-    // Razorpay signs the exact bytes it sent, so webhook verification needs the
-    // untouched body. Stash it while parsing instead of a separate raw route.
+
     verify: (req, _res, buf) => {
       (req as express.Request & { rawBody?: string }).rawBody =
         buf.toString("utf8");
@@ -36,6 +36,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
+
+app.use("/api", apiLimiter);
 
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);

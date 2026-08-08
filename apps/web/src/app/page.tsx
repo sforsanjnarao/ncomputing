@@ -1,11 +1,17 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowRight, Cpu, IndianRupee, Recycle, Wrench } from "lucide-react";
 import { fetchFromApi } from "@/lib/api";
 import type { Product } from "@/lib/types";
 import { ButtonLink } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { SavingsCalculator } from "@/components/savings-calculator";
 import { LeadCta } from "@/components/lead-cta";
+
+// Below the fold and interactive-only — its JS ships in a separate chunk
+// instead of the initial homepage bundle.
+const SavingsCalculator = dynamic(() =>
+  import("@/components/savings-calculator").then((m) => m.SavingsCalculator),
+);
 
 const PAIN_POINTS = [
   {

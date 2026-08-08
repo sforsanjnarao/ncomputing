@@ -3,7 +3,7 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import { prisma, OrderStatus, PaymentStatus, Role } from "@repo/db";
 import { CreatePaymentSchema, VerifyPaymentSchema } from "../zod/payment.zod";
-import { sendOrderConfirmation } from "../utils/email";
+import { queueOrderConfirmation } from "../queue";
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
@@ -47,8 +47,8 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
     },
   });
 
-  sendOrderConfirmation(updated).catch((err) =>
-    console.error("order confirmation email failed", err),
+  queueOrderConfirmation(updated.id).catch((err) =>
+    console.error("order confirmation enqueue failed", err),
   );
 
   return updated;

@@ -14,5 +14,6 @@ export const CreateProductSchema = z.object({
   summary: z.string().min(2, "Enter a summary."),
   highlights: z.array(z.string().min(1)).default([]),
   specifications: z.record(z.string()).default({}),
+  platforms: z.array(z.string().min(1)).default([]),
   isActive: z.boolean().default(true),
 });

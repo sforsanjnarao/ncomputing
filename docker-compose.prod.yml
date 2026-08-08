@@ -17,6 +17,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: ncomputing_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   http_server:
     container_name: ncomputing_http
     build:
@@ -33,10 +47,31 @@ services:
       RAZORPAY_KEY_ID: "${RAZORPAY_KEY_ID}"
       RAZORPAY_KEY_SECRET: "${RAZORPAY_KEY_SECRET}"
       RAZORPAY_WEBHOOK_SECRET: "${RAZORPAY_WEBHOOK_SECRET}"
-      RESEND_API_KEY: "${RESEND_API_KEY}"
-      MAIL_FROM: "${MAIL_FROM}"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    container_name: ncomputing_worker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-ncomputing}:${POSTGRES_PASSWORD:-ncomputing}@postgres:5432/${POSTGRES_DB:-ncomputing}?schema=public"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      RESEND_API_KEY: "${RESEND_API_KEY}"
+      MAIL_FROM: "${MAIL_FROM}"
+      LEAD_NOTIFY_TO: "${LEAD_NOTIFY_TO}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   web:
@@ -59,3 +94,4 @@ services:
 
 volumes:
   postgres_data_prod:
+  redis_data_prod:

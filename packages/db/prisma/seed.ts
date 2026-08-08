@@ -29,6 +29,12 @@ const PRODUCTS = [
       "Supported platforms":
         "Microsoft AVD, RDS, VERDE VDI, vSpace Pro Enterprise",
     },
+    platforms: [
+      "Microsoft AVD",
+      "RDS",
+      "VERDE VDI",
+      "vSpace Pro Enterprise",
+    ],
     isActive: true,
   },
   {
@@ -55,6 +61,7 @@ const PRODUCTS = [
       "Supported platforms":
         "Citrix, Omnissa Horizon, Microsoft AVD, Windows 365, RDP",
     },
+    platforms: ["Citrix", "Omnissa Horizon", "Microsoft AVD", "Windows 365", "RDP"],
     isActive: true,
   },
   {
@@ -79,6 +86,7 @@ const PRODUCTS = [
       Connectivity: "LAN or Wi-Fi",
       Licensing: "Per seat, billed with your vSpace Pro Server plan",
     },
+    platforms: ["vSpace Pro Server"],
     isActive: true,
   },
 ];

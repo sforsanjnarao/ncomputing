@@ -5,7 +5,9 @@ import {
   ListLeadsSchema,
   UpdateLeadSchema,
 } from "../zod/lead.zod";
-import { sendLeadNotification } from "../utils/email";
+import { queueLeadNotification } from "../queue";
+
+const PAGE_SIZE = 25;
 
 export const createLead = async (req: Request, res: Response) => {
   const parsed = CreateLeadSchema.safeParse(req.body);
@@ -23,7 +25,7 @@ export const createLead = async (req: Request, res: Response) => {
 
     // A failed notification must not fail the visitor's form submission — the
     // lead is already safely in the database.
-    sendLeadNotification(lead).catch((err) => console.error(err));
+    queueLeadNotification(lead.id).catch((err) => console.error(err));
 
     return res.status(201).json({ lead });
   } catch (err) {
@@ -56,11 +58,18 @@ export const adminListLeads = async (req: Request, res: Response) => {
       ];
     }
 
-    const leads = await prisma.lead.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
-    return res.status(200).json({ leads });
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (parsed.data.page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+      }),
+      prisma.lead.count({ where }),
+    ]);
+    return res
+      .status(200)
+      .json({ leads, total, page: parsed.data.page, pageSize: PAGE_SIZE });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "something went wrong" });

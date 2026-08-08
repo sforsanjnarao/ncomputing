@@ -5,12 +5,14 @@ import { formatInr } from "@repo/types";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const MAIL_FROM =
   process.env.MAIL_FROM || "NComputing India <onboarding@resend.dev>";
+.
+const LEAD_NOTIFY_TO = process.env.LEAD_NOTIFY_TO;
 
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 async function send(to: string, subject: string, html: string) {
   if (!resend) {
-    // Keeps local development and CI runnable without a Resend key.
+
     console.log(
       `[email] RESEND_API_KEY not set — would have sent "${subject}" to ${to}`,
     );
@@ -63,20 +65,77 @@ export async function sendOrderConfirmation(order: OrderWithDetails) {
   await send(order.user.email, `Order confirmed — ${order.orderNumber}`, html);
 }
 
-export async function sendLeadNotification(lead: Lead) {
-  const html = `
+
+function esc(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function leadAcknowledgement(lead: Lead) {
+  return `
   <div style="font-family:system-ui,-apple-system,sans-serif;color:#0f172a">
-    <h2 style="font-size:18px">Thanks, ${lead.name.split(" ")[0]} — we have your request.</h2>
+    <h2 style="font-size:18px">Thanks, ${esc(lead.name.split(" ")[0] ?? lead.name)} — we have your request.</h2>
     <p style="color:#475569">
-      A member of our team will call you on ${lead.phone} within one working day
+      A member of our team will call you on ${esc(lead.phone)} within one working day
       to discuss ${lead.seats ? `your ${lead.seats}-seat requirement` : "your requirement"}.
     </p>
     <p style="color:#64748b;font-size:13px">Reference: ${lead.type} &middot; ${lead.id}</p>
   </div>`;
+}
 
-  await send(
-    lead.email,
-    "We've received your request — NComputing India",
-    html,
-  );
+function leadInternalAlert(lead: Lead) {
+  const row = (label: string, value: string | null) =>
+    value
+      ? `<tr>
+          <td style="padding:6px 16px 6px 0;color:#64748b;vertical-align:top;white-space:nowrap">${label}</td>
+          <td style="padding:6px 0;color:#0f172a">${esc(value)}</td>
+        </tr>`
+      : "";
+
+  return `
+  <div style="font-family:system-ui,-apple-system,sans-serif;max-width:560px;color:#0f172a">
+    <h2 style="font-size:18px;margin-bottom:4px">New ${lead.type} lead</h2>
+    <p style="color:#64748b;font-size:13px;margin-top:0">
+      ${lead.createdAt.toISOString()} &middot; ${lead.id}
+    </p>
+    <table style="border-collapse:collapse;font-size:14px;margin:16px 0">
+      ${row("Name", lead.name)}
+      ${row("Email", lead.email)}
+      ${row("Phone", lead.phone)}
+      ${row("Organization", lead.organization)}
+      ${row("Seats", lead.seats ? String(lead.seats) : null)}
+      ${row("Product", lead.productSlug)}
+      ${row("Message", lead.message)}
+    </table>
+    <p style="color:#64748b;font-size:13px">
+      Reply directly to <a href="mailto:${encodeURI(lead.email)}">${esc(lead.email)}</a>,
+      or open the lead in the admin dashboard.
+    </p>
+  </div>`;
+}
+
+export async function sendLeadNotification(lead: Lead) {
+
+  const results = await Promise.allSettled([
+    send(
+      lead.email,
+      "We've received your request — NComputing India",
+      leadAcknowledgement(lead),
+    ),
+    LEAD_NOTIFY_TO
+      ? send(
+          LEAD_NOTIFY_TO,
+          `New ${lead.type} lead — ${lead.name}`,
+          leadInternalAlert(lead),
+        )
+      : Promise.resolve(),
+  ]);
+
+  const failures = results
+    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+    .map((r) => String(r.reason));
+  if (failures.length) throw new Error(failures.join("; "));
 }

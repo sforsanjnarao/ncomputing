@@ -3,6 +3,7 @@ import { prisma, Prisma, Role } from "@repo/db";
 import {
   CreateOrderSchema,
   AdminListOrdersSchema,
+  MyOrdersSchema,
   UpdateOrderStatusSchema,
 } from "../zod/order.zod";
 import { AddressInput } from "../zod/address.zod";
@@ -13,6 +14,8 @@ const orderInclude = {
   billingAddress: true,
   shippingAddress: true,
 } satisfies Prisma.OrderInclude;
+
+const PAGE_SIZE = 25;
 
 function generateOrderNumber() {
   const now = new Date();
@@ -127,13 +130,29 @@ export const getMyOrders = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: "unauthorized" });
 
-  try {
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      include: orderInclude,
+  const parsed = MyOrdersSchema.safeParse(req.query);
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Invalid page.",
+      details: parsed.error.flatten().fieldErrors,
     });
-    return res.status(200).json({ orders });
+  }
+
+  try {
+    const where: Prisma.OrderWhereInput = { userId };
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        include: orderInclude,
+        skip: (parsed.data.page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+      }),
+      prisma.order.count({ where }),
+    ]);
+    return res
+      .status(200)
+      .json({ orders, total, page: parsed.data.page, pageSize: PAGE_SIZE });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "something went wrong" });
@@ -186,12 +205,31 @@ export const adminListOrders = async (req: Request, res: Response) => {
       ];
     }
 
-    const orders = await prisma.order.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      include: orderInclude,
+    // Revenue and "awaiting" counts describe every order matching the current
+    // filters, not just the 25 shown on this page — otherwise the dashboard
+    // numbers would silently shrink to whatever fits on one page.
+    const [orders, total, revenue, awaiting] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        include: orderInclude,
+        skip: (parsed.data.page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+      }),
+      prisma.order.count({ where }),
+      prisma.order.aggregate({
+        where: { ...where, paymentStatus: "PAID" },
+        _sum: { orderAmount: true },
+      }),
+      prisma.order.count({ where: { ...where, status: "PENDING" } }),
+    ]);
+    return res.status(200).json({
+      orders,
+      total,
+      page: parsed.data.page,
+      pageSize: PAGE_SIZE,
+      stats: { revenue: revenue._sum.orderAmount ?? 0, awaiting },
     });
-    return res.status(200).json({ orders });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "something went wrong" });

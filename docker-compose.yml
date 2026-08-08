@@ -1,5 +1,6 @@
-# Optional: a local Postgres for development if you would rather not point at
-# Neon while building. Neon is what the deployed app uses.
+# Optional: local Postgres + Redis for development if you would rather not
+# point at Neon while building. Neon is what the deployed app uses for the
+# database; Redis backs the background job queue and the catalogue cache.
 #
 #   docker compose up -d
 #   DATABASE_URL="postgresql://ncomputing:ncomputing@localhost:5432/ncomputing"
@@ -18,5 +19,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: ncomputing-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
 volumes:
   pgdata:
+  redisdata:

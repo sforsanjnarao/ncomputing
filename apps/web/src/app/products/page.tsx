@@ -19,10 +19,15 @@ const COMPARISON: { label: string; value: (product: Product) => string }[] = [
   },
   { label: "Price", value: (p) => formatInr(p.amount) },
   {
-    label: "Where the desktop runs",
-    value: (p) => p.specifications["Works with"] ?? "On your own host PC",
+    // A pure function of the (structured) product type, not a JSON key guess.
+    label: "Where it runs",
+    value: (p) =>
+      p.type === "HARDWARE" ? "Its own device" : "Your existing PC",
   },
-  { label: "Platform", value: (p) => p.specifications.Platform ?? "—" },
+  {
+    label: "Works with",
+    value: (p) => (p.platforms.length ? p.platforms.join(", ") : "—"),
+  },
 ];
 
 export default async function ProductsPage() {

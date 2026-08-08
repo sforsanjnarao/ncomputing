@@ -69,6 +69,7 @@ export type Product = {
   summary: string;
   highlights: string[];
   specifications: Record<string, string>;
+  platforms: string[];
 };
 
 export type OrderItem = {

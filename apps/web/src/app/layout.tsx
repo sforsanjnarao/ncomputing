@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Electrolize, Roboto, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
+import { WebVitals } from "./web-vitals";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
@@ -51,6 +52,7 @@ export default function RootLayout({
       className={`${electrolize.variable} ${roboto.variable} ${spaceMono.variable}`}
     >
       <body className="flex min-h-screen flex-col font-sans">
+        <WebVitals />
         <Providers>
           <SiteHeader />
           <main className="flex-1">{children}</main>

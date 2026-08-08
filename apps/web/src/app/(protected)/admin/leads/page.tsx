@@ -13,6 +13,8 @@ import {
 import { Card, CardBody } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/field";
 import { Badge, LeadStatusBadge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
 
 const LEAD_TYPES: LeadType[] = ["DEMO", "SALES", "PRICING"];
 
@@ -22,31 +24,51 @@ const TYPE_LABELS: Record<LeadType, string> = {
   PRICING: "Pricing",
 };
 
+type LeadsResponse = { leads: Lead[]; total: number; pageSize: number };
+
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<LeadStatus | "">("");
   const [type, setType] = useState<LeadType | "">("");
+  const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
+    setError(false);
     const params = new URLSearchParams();
     if (search.trim()) params.set("search", search.trim());
     if (status) params.set("status", status);
     if (type) params.set("type", type);
+    params.set("page", String(page));
 
-    const data = await api.get<{ leads: Lead[] }>(`/leads/admin?${params}`);
-    setLeads(data.leads);
-    setLoading(false);
-  }, [search, status, type]);
+    try {
+      const data = await api.get<LeadsResponse>(`/leads/admin?${params}`);
+      setLeads(data.leads);
+      setTotal(data.total);
+      setPageSize(data.pageSize);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, status, type, page]);
 
   // Debounced so typing in the search box does not fire a request per keystroke.
   useEffect(() => {
     const timer = setTimeout(() => {
-      load().catch(() => setLoading(false));
+      load();
     }, 250);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // A changed filter makes "page 3" meaningless — start over from page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [search, status, type]);
 
   async function changeStatus(lead: Lead, next: LeadStatus) {
     const { lead: updated } = await api.patch<{ lead: Lead }>(
@@ -128,6 +150,20 @@ export default function AdminLeadsPage() {
                     Loading…
                   </td>
                 </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center">
+                    <p className="text-red-600">Could not load leads.</p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="mt-3"
+                      onClick={load}
+                    >
+                      Retry
+                    </Button>
+                  </td>
+                </tr>
               ) : leads.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-slate-500">
@@ -187,6 +223,12 @@ export default function AdminLeadsPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={pageSize}
+          onChange={setPage}
+        />
       </Card>
     </>
   );

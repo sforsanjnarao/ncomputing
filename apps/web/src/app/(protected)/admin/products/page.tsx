@@ -12,13 +12,17 @@ import { Badge } from "@/components/ui/badge";
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function load() {
+    setLoading(true);
+    setLoadError(false);
     api
       .get<{ products: Product[] }>("/products/admin")
       .then((data) => setProducts(data.products))
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }
 
@@ -49,6 +53,11 @@ export default function AdminProductsPage() {
         .filter(([key, value]) => key && value),
     );
 
+    const platforms = data.platforms
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
     try {
       await api.post("/products", {
         slug: data.slug,
@@ -59,6 +68,7 @@ export default function AdminProductsPage() {
         summary: data.summary,
         highlights,
         specifications,
+        platforms,
         isActive: data.isActive === "on",
       });
       form.reset();
@@ -137,6 +147,19 @@ export default function AdminProductsPage() {
                 />
               )}
             </Field>
+            <Field
+              label="Platforms"
+              hint="One per line — shown in the products comparison table"
+            >
+              {(props) => (
+                <Textarea
+                  {...props}
+                  name="platforms"
+                  rows={3}
+                  placeholder="Microsoft AVD"
+                />
+              )}
+            </Field>
 
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <input
@@ -173,6 +196,20 @@ export default function AdminProductsPage() {
                 <tr>
                   <td colSpan={4} className="p-8 text-center text-slate-500">
                     Loading…
+                  </td>
+                </tr>
+              ) : loadError ? (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center">
+                    <p className="text-red-600">Could not load products.</p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="mt-3"
+                      onClick={load}
+                    >
+                      Retry
+                    </Button>
                   </td>
                 </tr>
               ) : products.length === 0 ? (
