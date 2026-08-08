@@ -25,8 +25,6 @@ const ACTIVITY_LABELS: Record<VisitorEventType, string> = {
   LEAD_SUBMITTED: "form submitted",
 };
 
-// Busiest signal first, and skip the noisiest/least informative one (plain
-// page views) once there's anything more specific to show instead.
 function formatActivity(activity: Lead["activity"]) {
   if (!activity || activity.length === 0) return "No tracked activity";
   const meaningful = activity.filter((a) => a.type !== "PAGE_VIEW");
@@ -59,9 +57,9 @@ export default function AdminLeadsPage() {
   const [status, setStatus] = useState<LeadStatus | "">("");
   const [type, setType] = useState<LeadType | "">("");
   const [page, setPage] = useState(1);
-  // Sorts only the currently loaded page — score isn't a database column
-  // (it's computed from tracked events per request), so this isn't a global
-  // sort across every lead, just this page's 25.
+  
+  
+  
   const [sortByScore, setSortByScore] = useState(false);
 
   const load = useCallback(async () => {
@@ -84,7 +82,7 @@ export default function AdminLeadsPage() {
     }
   }, [search, status, type, page]);
 
-  // Debounced so typing in the search box does not fire a request per keystroke.
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       load();
@@ -92,7 +90,7 @@ export default function AdminLeadsPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
-  // A changed filter makes "page 3" meaningless — start over from page 1.
+  
   useEffect(() => {
     setPage(1);
   }, [search, status, type]);

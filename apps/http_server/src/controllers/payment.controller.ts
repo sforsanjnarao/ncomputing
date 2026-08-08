@@ -14,7 +14,6 @@ const razorpay =
     ? new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET })
     : null;
 
-
 async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
   const order = await prisma.order.findUnique({ where: { razorpayOrderId } });
   if (!order) return null;
@@ -35,7 +34,7 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
     where: { id: order.id },
     data: {
       paymentStatus: PaymentStatus.PAID,
-      // Paid orders move straight into the fulfilment queue.
+      
       status: OrderStatus.PROCESSING,
       razorpayPaymentId,
     },
@@ -53,7 +52,6 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
 
   return updated;
 }
-
 
 export const createPayment = async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -121,8 +119,6 @@ export const createPayment = async (req: Request, res: Response) => {
   }
 };
 
-// Verifies the signature Razorpay hands to the browser on success. Without this
-// check, a user could simply call the success endpoint by hand.
 export const verifyPayment = async (req: Request, res: Response) => {
   const parsed = VerifyPaymentSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -163,7 +159,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "something went wrong" });
   }
 };
-
 
 export const paymentWebhook = async (req: Request, res: Response) => {
   if (!RAZORPAY_WEBHOOK_SECRET)

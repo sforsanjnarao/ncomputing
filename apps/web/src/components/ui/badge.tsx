@@ -34,8 +34,6 @@ export function Badge({
   );
 }
 
-// Status→colour mapping lives here so every table, card and email renders the
-// same status the same way.
 const orderTones: Record<OrderStatus, Tone> = {
   PENDING: "amber",
   PROCESSING: "blue",
@@ -57,9 +55,6 @@ const leadTones: Record<LeadStatus, Tone> = {
   CLOSED: "neutral",
 };
 
-// Weak/Medium/Strong is about pre-contact browsing behaviour, not where a
-// lead sits in the sales process — a deliberately different scale from
-// leadTones above, so the two badges never get confused for one another.
 const scoreTones: Record<LeadScoreLabel, Tone> = {
   WEAK: "neutral",
   MEDIUM: "amber",

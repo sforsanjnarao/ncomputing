@@ -8,26 +8,18 @@ import { SiteFooter } from "@/components/site-footer";
 import { VisitorTracker } from "@/components/visitor-tracker";
 import { AutoLeadPrompt } from "@/components/auto-lead-prompt";
 
-// Electrolize is reserved for the big hero-level h1 titles only — a
-// geometric, techy face used sparingly for impact. It ships one weight, so
-// those headings lean on size and tracking rather than font-weight.
 const electrolize = Electrolize({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-electrolize",
 });
 
-// Roboto carries subheadings, body copy and the rest of the UI (buttons,
-// nav, forms) — readable at length, which the site's marketing paragraphs
-// need more than a display face does.
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-roboto",
 });
 
-// Space Mono is reserved for numeric/data display — order numbers and price
-// totals — where a monospaced face actually earns its place.
 const spaceMono = Space_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],

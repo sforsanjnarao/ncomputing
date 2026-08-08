@@ -26,14 +26,14 @@ export function LoginForm() {
     try {
       const user = await login(data.email, data.password);
 
-      // Send admins to the dashboard, and everyone else back to whatever the
-      // middleware interrupted.
+      
+      
       const next = searchParams.get("next");
       const destination =
         user.role === "ADMIN" ? "/admin" : next || "/account/orders";
 
       router.push(destination);
-      // Re-run middleware and server components now that the cookie exists.
+      
       router.refresh();
     } catch (caught) {
       setError(

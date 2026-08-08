@@ -26,8 +26,8 @@ export const trackEvent = async (req: Request, res: Response) => {
 
     const { scoreLabel } = await scoreVisitor(visitorId);
 
-    // Only worth prompting someone who isn't already a Lead — asking someone
-    // who already gave their details to give them again just looks broken.
+    
+    
     const existingLead = await prisma.lead.findFirst({
       where: { visitorId },
       select: { id: true },
@@ -39,8 +39,8 @@ export const trackEvent = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error(err);
-    // Tracking is best-effort — a failure here should never surface to the
-    // visitor as an error state.
+    
+    
     return res.status(200).json({ scoreLabel: "WEAK", promptForContact: false });
   }
 };

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { Card, CardBody } from "@/components/ui/card";
 
-/** Shared shell for the sign-in and sign-up pages. */
 export function AuthCard({
   title,
   subtitle,

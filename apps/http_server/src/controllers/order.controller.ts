@@ -26,9 +26,6 @@ function generateOrderNumber() {
   return `NC-${date}-${random}`;
 }
 
-// Reuses a matching saved address for this user, or saves a new one. This is
-// what lets a returning customer's next order come pre-filled instead of
-// asking them to retype the same address every time.
 async function resolveAddress(userId: string, input: AddressInput) {
   const existing = await prisma.address.findFirst({
     where: { userId, ...input },
@@ -39,9 +36,6 @@ async function resolveAddress(userId: string, input: AddressInput) {
   return created.id;
 }
 
-// Create an order. Prices come from the database, never from the request body:
-// the client sends *what* it wants (product + quantity); the server decides
-// what that costs. Otherwise anyone could POST a ₹1 order.
 export const createOrder = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: "unauthorized" });
@@ -90,7 +84,7 @@ export const createOrder = async (req: Request, res: Response) => {
         serviceDurationMonths: item.serviceDurationMonths,
       });
     }
-    // Guards against float drift when summing many line items.
+    
     orderAmount = Math.round(orderAmount * 100) / 100;
 
     if (needsShipping && !input.shippingAddress) {
@@ -112,8 +106,8 @@ export const createOrder = async (req: Request, res: Response) => {
         orderCurrency: "INR",
         billingAddressId,
         shippingAddressId,
-        // The order and its items are written in one statement, so a
-        // half-created order can never exist.
+        
+        
         items: { create: lines },
       },
       include: orderInclude,
@@ -159,8 +153,6 @@ export const getMyOrders = async (req: Request, res: Response) => {
   }
 };
 
-// An ADMIN may read any order; a USER only their own. The check lives here
-// because it depends on the data, which middleware cannot see.
 export const getOrder = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: "unauthorized" });
@@ -205,9 +197,9 @@ export const adminListOrders = async (req: Request, res: Response) => {
       ];
     }
 
-    // Revenue and "awaiting" counts describe every order matching the current
-    // filters, not just the 25 shown on this page — otherwise the dashboard
-    // numbers would silently shrink to whatever fits on one page.
+    
+    
+    
     const [orders, total, revenue, awaiting] = await Promise.all([
       prisma.order.findMany({
         where,

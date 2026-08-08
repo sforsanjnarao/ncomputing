@@ -6,11 +6,6 @@ import { cn } from "@/lib/utils";
 const control =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-slate-400 focus:border-brand-600 disabled:bg-slate-50";
 
-/**
- * Wraps a control with its label, hint and error message, and wires up the
- * accessibility attributes. Every form in the app uses this so validation
- * errors always appear in the same place, in the same colour.
- */
 export function Field({
   label,
   hint,

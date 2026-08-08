@@ -10,8 +10,6 @@ export const metadata: Metadata = {
     "Book a demo, request pricing, or ask a question about NComputing thin clients for your school or business.",
 };
 
-// Three different intents, three different levels of commitment — a visitor who
-// is not ready to buy should still have somewhere obvious to go.
 const PATHS: {
   type: LeadType;
   icon: typeof PhoneCall;

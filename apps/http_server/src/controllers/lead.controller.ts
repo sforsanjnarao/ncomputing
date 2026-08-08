@@ -27,8 +27,8 @@ export const createLead = async (req: Request, res: Response) => {
     });
 
     if (req.visitorId) {
-      // Best-effort, like the notification below — a visitor's submission
-      // must never fail because the activity log had a hiccup.
+      
+      
       prisma.visitorEvent
         .create({
           data: {
@@ -39,7 +39,6 @@ export const createLead = async (req: Request, res: Response) => {
         })
         .catch((err) => console.error(err));
     }
-
 
     queueLeadNotification(lead.id).catch((err) => console.error(err));
 

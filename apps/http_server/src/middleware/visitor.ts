@@ -3,7 +3,6 @@ import crypto from "crypto";
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
-
 const VISITOR_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",

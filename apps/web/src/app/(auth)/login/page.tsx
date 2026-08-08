@@ -16,7 +16,7 @@ export default function LoginPage() {
         href: "/register",
       }}
     >
-      {/* useSearchParams needs a Suspense boundary for static rendering. */}
+      {}
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>

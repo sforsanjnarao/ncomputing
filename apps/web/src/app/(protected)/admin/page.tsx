@@ -32,8 +32,8 @@ export default function AdminOrdersPage() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Order | null>(null);
 
-  // Filtering happens on the server so it keeps working once there are more
-  // orders than one page can hold.
+  
+  
   const load = useCallback(async () => {
     setError(false);
     const params = new URLSearchParams();
@@ -54,7 +54,7 @@ export default function AdminOrdersPage() {
     }
   }, [search, status, page]);
 
-  // Debounced so typing in the search box does not fire a request per keystroke.
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       load();
@@ -62,7 +62,7 @@ export default function AdminOrdersPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
-  // A changed filter makes "page 3" meaningless — start over from page 1.
+  
   useEffect(() => {
     setPage(1);
   }, [search, status]);

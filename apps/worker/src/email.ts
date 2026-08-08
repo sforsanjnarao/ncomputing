@@ -65,7 +65,6 @@ export async function sendOrderConfirmation(order: OrderWithDetails) {
   await send(order.user.email, `Order confirmed — ${order.orderNumber}`, html);
 }
 
-
 function esc(value: string) {
   return value
     .replace(/&/g, "&amp;")

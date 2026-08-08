@@ -21,8 +21,8 @@ export function SiteHeader() {
   const { itemCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // The admin dashboard has its own chrome; the marketing header would only
-  // get in the way there.
+  
+  
   if (pathname.startsWith("/admin")) return null;
 
   return (

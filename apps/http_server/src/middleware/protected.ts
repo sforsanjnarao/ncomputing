@@ -24,8 +24,6 @@ export const protectMiddleware = (
   }
 };
 
-// Rejects requests from users who do not hold one of the given roles. This is
-// the real security boundary — the frontend guard only hides the UI.
 export const requireRole =
   (...roles: Role[]) =>
   (req: Request, res: Response, next: NextFunction) => {

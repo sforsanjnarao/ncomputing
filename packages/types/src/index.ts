@@ -1,8 +1,5 @@
-// Shared, client-safe constants and DTO shapes used by both the API and the web
-// app. Nothing here imports Prisma or Node built-ins, so the browser bundle can
-// pull it in without dragging the database client along.
 
-/** Renders a rupee amount (a plain decimal, not paise) as "₹1,23,456.00". */
+
 export function formatInr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -41,9 +38,6 @@ export const LEAD_STATUSES: LeadStatus[] = [
   "CLOSED",
 ];
 
-// A saved address. Every order points at one of these rather than storing a
-// throwaway copy — the first time someone checks out it gets created, and
-// every checkout after that can just reuse or tweak it instead of retyping.
 export type Address = {
   id: string;
   fullName: string;
@@ -87,8 +81,8 @@ export type OrderItem = {
   serviceDurationMonths: number | null;
   serviceStartsAt: string | null;
   serviceEndsAt: string | null;
-  // Included from the relation so the UI can show a name and price without a
-  // second fetch — the source of truth is still the Product row, not a copy.
+  
+  
   product: Product;
 };
 
@@ -123,10 +117,10 @@ export type Lead = {
   message: string | null;
   status: LeadStatus;
   createdAt: string;
-  // Present only from the admin list endpoint, and only when this lead has a
-  // visitorId with tracked browsing history to score — absent (not zero) for
-  // leads with nothing to go on, so the UI can tell "no signal" from "weak
-  // signal" apart.
+  
+  
+  
+  
   score?: number;
   scoreLabel?: LeadScoreLabel;
   activity?: { type: VisitorEventType; count: number }[];

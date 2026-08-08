@@ -4,7 +4,7 @@ import { AddressSchema } from "./address.zod";
 
 export const CreateOrderSchema = z.object({
   billingAddress: AddressSchema,
-  // Only required if the cart has a HARDWARE item — the controller checks that.
+  
   shippingAddress: AddressSchema.optional(),
   items: z
     .array(

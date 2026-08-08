@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import type { LeadType } from "@/lib/types";
 
-/** Single form behind all three lead paths — demo, sales, pricing. They collect
- *  the same details and just tag the submission differently. */
 export function LeadDialog({
   open,
   onClose,

@@ -19,7 +19,7 @@ const COMPARISON: { label: string; value: (product: Product) => string }[] = [
   },
   { label: "Price", value: (p) => formatInr(p.amount) },
   {
-    // A pure function of the (structured) product type, not a JSON key guess.
+    
     label: "Where it runs",
     value: (p) =>
       p.type === "HARDWARE" ? "Its own device" : "Your existing PC",
@@ -65,8 +65,7 @@ export default async function ProductsPage() {
         <div className="container-page">
           <h2 className="heading-2">Side by side</h2>
 
-          {/* Wide tables are the one thing that genuinely cannot reflow on a
-              phone, so this one scrolls inside its own container. */}
+          {}
           <div className="mt-6 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
             <table className="w-full min-w-[640px] border-collapse overflow-hidden rounded-xl bg-white text-sm">
               <thead>

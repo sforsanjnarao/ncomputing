@@ -74,8 +74,8 @@ export const createProduct = async (req: Request, res: Response) => {
         .json({ error: "A product with that slug already exists." });
 
     const product = await prisma.product.create({ data: parsed.data });
-    // The list a visitor sees must reflect this immediately, not after the
-    // cache's TTL happens to expire.
+    
+    
     await deleteCache(PRODUCTS_LIST_KEY);
     return res.status(201).json({ product });
   } catch (err) {

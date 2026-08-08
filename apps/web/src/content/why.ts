@@ -1,11 +1,4 @@
-/**
- * Long-form marketing narrative for each product's "Why this one?" page.
- *
- * This is prose, not data: it is never queried, filtered or sorted, and it
- * changes when someone rewrites a sentence rather than when someone places an
- * order. Keeping it in the repo means edits go through review like any other
- * change, instead of needing a CMS this project does not warrant.
- */
+
 
 export type WhyContent = {
   slug: string;

@@ -1,9 +1,6 @@
 import { formatInr } from "@/lib/format";
 import { ASSUMPTIONS } from "@/content/pricing-assumptions";
 
-// Numeric rows are strings built from ASSUMPTIONS (shared with
-// SavingsCalculator) rather than separately hardcoded, so this table can
-// never quote a different number than the calculator for the same thing.
 const ROWS = [
   {
     label: "Hardware, to add 10 seats",

@@ -50,7 +50,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
-/** Same visual language for navigation, so links and buttons never drift apart. */
 export function ButtonLink({
   variant = "primary",
   size = "md",

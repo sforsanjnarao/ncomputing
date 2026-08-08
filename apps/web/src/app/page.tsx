@@ -8,8 +8,6 @@ import { ProductCard } from "@/components/product-card";
 import { LeadCta } from "@/components/lead-cta";
 import { ComparisonTable } from "@/components/comparison-table";
 
-// Below the fold and interactive-only — its JS ships in a separate chunk
-// instead of the initial homepage bundle.
 const SavingsCalculator = dynamic(() =>
   import("@/components/savings-calculator").then((m) => m.SavingsCalculator),
 );
@@ -58,7 +56,6 @@ const TESTIMONIALS = [
   },
 ];
 
-
 const COMPATIBLE_PLATFORMS = [
   "Microsoft AVD",
   "Windows 365",
@@ -73,8 +70,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero — the whole proposition in one sentence, because this visitor has
-          probably never heard the words "desktop virtualisation". */}
+      {}
       <section className="hero-gradient border-b border-slate-200">
         <div className="container-page py-16 sm:py-24">
           <div className="max-w-3xl">
@@ -115,7 +111,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Problem */}
+      {}
       <section className="section">
         <div className="container-page">
           <div className="max-w-2xl">
@@ -146,8 +142,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Calculator — the single most persuasive thing on the page for a buyer
-          who thinks in rupees rather than in technology. */}
+      {}
       <section className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
         <div className="container-page">
           <div className="mb-8 max-w-2xl">
@@ -165,7 +160,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Products */}
+      {}
       <section className="section">
         <div className="container-page">
           <div className="max-w-2xl">
@@ -188,8 +183,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Comparison — the most persuasive way to explain something unfamiliar
-          is against something the reader already understands. */}
+      {}
       <section className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
         <div className="container-page">
           <div className="max-w-2xl">
@@ -206,7 +200,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {}
       <section className="section">
         <div className="container-page">
           <div className="max-w-2xl">
@@ -235,8 +229,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Compatibility — real specification data, not a certification claim,
-          hence "works with" rather than "official partner." */}
+      {}
       <section className="border-t border-slate-200 py-12">
         <div className="container-page">
           <p className="text-center text-sm font-medium text-slate-500">
@@ -255,7 +248,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Closing CTA */}
+      {}
       <section className="bg-ink">
         <div className="container-page flex flex-col gap-6 py-14 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">

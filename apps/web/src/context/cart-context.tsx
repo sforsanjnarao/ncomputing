@@ -13,13 +13,6 @@ import { track } from "@/lib/track";
 
 const STORAGE_KEY = "ncomputing.cart.v1";
 
-/**
- * A line in the cart.
- *
- * The price field here is a *display snapshot* only. What gets sent to the
- * API is the product id and quantity — the server prices the order from its
- * own database, so tampering with localStorage achieves nothing.
- */
 export type CartLine = {
   key: string;
   productId: string;
@@ -52,7 +45,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) setLines(JSON.parse(stored) as CartLine[]);
     } catch {
-      // Corrupt or unavailable storage just means an empty cart.
+      
     }
     setHydrated(true);
   }, []);

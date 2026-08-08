@@ -8,7 +8,6 @@ import { protectMiddleware, requireAdmin } from "../middleware/protected";
 
 const router: Router = express.Router();
 
-// Public: a visitor requesting a demo has no account yet — that is the point.
 router.post("/", createLead);
 
 router.get("/admin", protectMiddleware, requireAdmin, adminListLeads);

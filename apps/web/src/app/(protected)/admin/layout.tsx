@@ -5,14 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { AdminNav } from "./admin-nav";
 
-/**
- * Admin has its own chrome — no marketing header, no footer. Access is enforced
- * twice: this client guard sends non-admins away, and every API call underneath
- * goes through requireRole('ADMIN') on the server (the real boundary).
- *
- * The parent (protected) layout already guarantees a signed-in user; here we
- * only add the role check.
- */
 export default function AdminLayout({
   children,
 }: {

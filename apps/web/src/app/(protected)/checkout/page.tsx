@@ -54,8 +54,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { lines, totalAmount, clear } = useCart();
-  // Most-recently-saved address prefills the form so a returning customer
-  // does not have to retype it — they can just confirm or tweak it.
+  
+  
   const savedAddress = user?.addresses?.[0];
 
   const needsShipping = useMemo(
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     track("CHECKOUT_STARTED");
   }, []);
 
-  // The cart lives in localStorage, so it is only knowable after hydration.
+  
   useEffect(() => {
     if (hydrated && lines.length === 0) router.replace("/cart");
   }, [hydrated, lines.length, router]);
@@ -101,8 +101,8 @@ export default function CheckoutPage() {
     const data = Object.fromEntries(
       new FormData(event.currentTarget),
     ) as Record<string, string>;
-    // Only the fields actually rendered exist in the form: when there is no
-    // shipping section, the "billing" fields are the only ones on the page.
+    
+    
     const billingAddress = needsShipping
       ? readAddress(data, sameAsShipping ? "shipping" : "billing")
       : readAddress(data, "billing");
@@ -111,8 +111,8 @@ export default function CheckoutPage() {
       : undefined;
 
     try {
-      // 1. Create the order. The API prices it from its own catalogue — the
-      //    total shown on this page is only a preview.
+      
+      
       const { order } = await api.post<{ order: Order }>("/orders", {
         billingAddress,
         shippingAddress,
@@ -123,7 +123,7 @@ export default function CheckoutPage() {
         })),
       });
 
-      // 2. Ask the API to open a Razorpay order for that amount.
+      
       const payment = await api.post<PaymentInit>("/payments/create-order", {
         orderId: order.id,
       });
@@ -134,8 +134,8 @@ export default function CheckoutPage() {
           "Could not load the payment window. Check your connection.",
         );
 
-      // 3. Hand over to Razorpay. Note the order already exists in our database
-      //    as PENDING — if the user abandons here, we still have the record.
+      
+      
       openRazorpayCheckout({
         key: payment.keyId,
         amount: payment.amountInPaise,
@@ -152,8 +152,8 @@ export default function CheckoutPage() {
         modal: { ondismiss: () => setSubmitting(false) },
         handler: async (response: RazorpaySuccess) => {
           try {
-            // 4. The signature is verified server-side before anything is
-            //    marked paid.
+            
+            
             await api.post("/payments/verify", response);
             clear();
             router.push(`/account/orders/${order.id}?placed=1`);
@@ -279,9 +279,6 @@ export default function CheckoutPage() {
   );
 }
 
-/** Same fields for shipping and billing — one component, used twice. When the
- *  signed-in user already has a saved address, its values seed the form so
- *  they only need to confirm it rather than retype it every order. */
 function AddressFields({
   legend,
   prefix,

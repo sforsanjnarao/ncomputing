@@ -1,8 +1,6 @@
 import { formatInr } from "@/lib/format";
 import type { Address, Order } from "@/lib/types";
 
-/** Read-only view of an order's contents. Shared by the customer's order page
- *  and the admin dashboard, so both always show the same thing. */
 export function OrderItemsTable({ order }: { order: Order }) {
   return (
     <div>

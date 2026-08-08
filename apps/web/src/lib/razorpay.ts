@@ -25,11 +25,6 @@ declare global {
   }
 }
 
-/**
- * Loads Razorpay's checkout script on demand rather than on every page.
- * Resolves immediately if it is already present, so reopening checkout after a
- * dismissed payment does not add a second script tag.
- */
 export function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);

@@ -16,7 +16,7 @@ export function Modal({
   description?: string;
   children: ReactNode;
 }) {
-  // Escape to close, and stop the page behind from scrolling while open.
+  
   useEffect(() => {
     if (!open) return;
 

@@ -18,6 +18,4 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-// Re-export the generated client's model types and enums so app code can pull
-// everything it needs from `@repo/db` instead of reaching into `@prisma/client`.
 export * from "../generated/prisma/client.js";

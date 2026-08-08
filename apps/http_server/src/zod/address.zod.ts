@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Shared by order creation (checkout) and anywhere else an address is taken.
 export const AddressSchema = z.object({
   fullName: z.string().min(2, "Please enter a full name."),
   fullAddress: z.string().min(5, "Please enter the address."),

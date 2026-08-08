@@ -27,7 +27,6 @@ function scoreFromCounts(counts: Partial<Record<VisitorEventType, number>>) {
   );
 }
 
-
 export async function scoreVisitor(visitorId: string) {
   const grouped = await prisma.visitorEvent.groupBy({
     by: ["type"],
@@ -45,7 +44,6 @@ export async function scoreVisitor(visitorId: string) {
   const score = scoreFromCounts(counts);
   return { score, scoreLabel: bucketScore(score), activity };
 }
-
 
 export async function scoreVisitors(visitorIds: string[]) {
   const ids = [...new Set(visitorIds)];

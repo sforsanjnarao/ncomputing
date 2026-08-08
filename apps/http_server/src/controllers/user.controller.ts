@@ -6,7 +6,6 @@ import { RegisterSchema, LoginSchema } from "../zod/user.zod";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
-
 const AUTH_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === "production",
   sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as

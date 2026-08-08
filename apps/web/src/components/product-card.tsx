@@ -33,8 +33,7 @@ export function ProductCard({ product }: { product: Product }) {
           </p>
         </div>
 
-        {/* The "why" page comes first on purpose: this buyer needs the problem
-            framed before a spec sheet means anything to them. */}
+        {}
         <div className="mt-5 flex flex-col gap-2">
           <Link
             href={`/products/${product.slug}`}

@@ -1,16 +1,12 @@
 import type { Config } from "tailwindcss";
 
-/**
- * The whole site is built from these tokens rather than ad-hoc hex values, so
- * spacing and colour stay consistent across marketing, checkout and admin.
- */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // Teal / dark teal from the brand palette — primary buttons, links,
-        // focus rings.
+        
+        
         brand: {
           50: "#eaf5f6",
           100: "#cfe9ec",
@@ -21,16 +17,16 @@ const config: Config = {
           800: "#00403f",
           900: "#00282a",
         },
-        // Mint-derived green — reserved for savings, discounts and "paid"
-        // states, matching what the money-saving pitch is actually about.
+        
+        
         savings: {
           50: "#eef8f1",
           100: "#d7eedd",
           600: "#2f9e63",
           700: "#227a4c",
         },
-        // Warm cream accent from the palette — used sparingly for section
-        // backgrounds that need to feel less clinical than white.
+        
+        
         sand: "#f0e5d8",
         ink: "#001f3f",
       },

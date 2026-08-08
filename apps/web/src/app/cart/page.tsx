@@ -124,8 +124,7 @@ export default function CartPage() {
               Continue shopping
             </ButtonLink>
 
-            {/* Prices are recalculated by the API at checkout; this is only a
-                preview, so a stale localStorage cart cannot mislead anyone. */}
+            {}
             <p className="text-xs text-slate-500">
               Final pricing is confirmed by our server at checkout. Shipping is
               free across India.

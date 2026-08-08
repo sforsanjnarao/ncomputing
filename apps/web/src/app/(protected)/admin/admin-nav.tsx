@@ -36,7 +36,7 @@ export function AdminNav() {
                 href={link.href}
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100",
-                  // "/admin" would otherwise match every admin URL.
+                  
                   (link.href === "/admin"
                     ? pathname === "/admin"
                     : pathname.startsWith(link.href)) &&

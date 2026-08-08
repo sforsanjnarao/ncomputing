@@ -3,8 +3,6 @@ import { prisma } from "@repo/db";
 import { redis } from "./redis";
 import { sendOrderConfirmation, sendLeadNotification } from "./email";
 
-// Same consumer as apps/worker/src/index.ts, running inside this process
-// instead of a separate deployment — see startEmailWorker() below for why.
 async function processJob(job: Job) {
   if (job.name === "order-confirmation") {
     const order = await prisma.order.findUnique({
@@ -31,12 +29,6 @@ async function processJob(job: Job) {
   console.error(`unknown job type: ${job.name}`);
 }
 
-// Opt-in: platforms with a free/cheap single always-on process (Render's free
-// Web Service) but no free background-worker tier can run the consumer here
-// instead of deploying apps/worker separately. Self-hosted Docker and the
-// Render+Railway split both already run apps/worker on its own, so this stays
-// off there — running both would just mean two workers racing over the same
-// BullMQ queue for no benefit.
 export function startEmailWorker() {
   const worker = new Worker("email", processJob, { connection: redis });
 

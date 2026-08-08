@@ -1,9 +1,4 @@
-// NComputing India store — data model.
-//
-// Money is stored everywhere as an integer number of paise (1 rupee = 100 paise).
-// Floats are never used for currency, and Razorpay's own `amount` field is paise
-// too — naming it *InPaise* everywhere is what stops that unit from getting
-// mixed up with rupees at a call site.
+
 
 generator client {
   provider = "prisma-client"
@@ -59,12 +54,11 @@ enum VisitorEventType {
   LEAD_SUBMITTED
 }
 
-
 model User {
   id           String   @id @default(cuid())
   name         String
   email        String   @unique
-  password     String // bcrypt hash, never the plaintext
+  password     String 
   phone        String?
   organization String?
   addresses Address[]
@@ -79,18 +73,18 @@ model Product {
   slug     String      @unique
   name     String
   type     ProductType
-  // priceInPaise Int  //use rupess
+  
   amount Float
   currency String @default("INR")
-  isActive Boolean     @default(true) // show on the site or not
+  isActive Boolean     @default(true) 
 
   tagline        String
   summary        String
   highlights     String[]
   specifications Json
 
-  // Structured (not buried in `specifications`) because the comparison table
-  // needs to read the same field name for every product, not guess a JSON key.
+  
+  
   platforms String[]
 
   orderItems OrderItem[]
@@ -137,13 +131,13 @@ model Order {
   razorpayPaymentId String?
 
   items OrderItem[]
-  //address imp
+  
 
-   // Mandatory for every order.
+   
   billingAddressId String
   billingAddress   Address @relation("BillingAddress",fields: [billingAddressId],references: [id])
 
-  // Required only when the cart contains physical hardware.
+  
   shippingAddressId String?
   shippingAddress   Address? @relation("ShippingAddress",fields: [shippingAddressId],references: [id])
 
@@ -163,10 +157,8 @@ model OrderItem {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-//hardware
   quantity Int @default(1)
 
-//SOFTWARE
   seats                 Int?
   serviceDurationMonths Int?
   serviceStartsAt       DateTime?
@@ -177,7 +169,6 @@ model OrderItem {
 
   @@index([orderId])
 }
-
 
 model Lead {
   id           String     @id @default(cuid())
@@ -201,7 +192,6 @@ model Lead {
   @@index([createdAt])
   @@index([visitorId])
 }
-
 
 model VisitorEvent {
   id          String           @id @default(cuid())

@@ -3,7 +3,6 @@ import { redis } from "./redis";
 import { prisma } from "@repo/db";
 import { sendOrderConfirmation, sendLeadNotification } from "./email";
 
-
 export const emailQueue = new Queue("email", { connection: redis });
 
 const RETRY_OPTS = {

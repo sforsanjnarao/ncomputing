@@ -1,8 +1,5 @@
 import { PrismaClient, ProductType } from "../lib/prisma.js";
 
-// Prices are illustrative — NComputing sells through resellers and does not
-// publish direct list pricing, so these are reasonable placeholders, not
-// quoted figures.
 export const PRODUCTS = [
   {
     slug: "rx420-rdp",

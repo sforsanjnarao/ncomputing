@@ -51,8 +51,7 @@ export default async function WhyPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* Symptoms — named in the buyer's own language, not ours. If they
-          recognise themselves here, the rest of the page is worth reading. */}
+      {}
       <section className="section">
         <div className="container-page">
           <h2 className="heading-2">Does this sound familiar?</h2>
@@ -118,8 +117,7 @@ export default async function WhyPage({ params }: PageProps) {
             </ul>
           </div>
 
-          {/* Saying plainly when the product is wrong is what makes the rest of
-              the page believable. */}
+          {}
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
             <h2 className="text-lg font-semibold">
               When it is the wrong choice

@@ -22,8 +22,6 @@ const COPY: Record<LeadType, { title: string; description: string }> = {
   },
 };
 
-/** Button that opens the lead form, so marketing pages can drop in a lead
- *  capture point without becoming client components themselves. */
 export function LeadCta({
   type,
   label,
