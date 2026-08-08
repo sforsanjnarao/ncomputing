@@ -7,13 +7,28 @@ instead:
 | Piece | Where | Why |
 |---|---|---|
 | `apps/web` (Next.js) | **Vercel** | Built for Next.js specifically |
-| `apps/http_server` (Express API) | **Render** — Web Service | Needs to stay running, not a serverless function |
-| `apps/worker` (BullMQ consumer) | **Render** — Background Worker | Same reason, no public port needed |
+| `apps/http_server` (Express API) **+ the email worker, in-process** | **Render** — Web Service | Needs to stay running, not a serverless function. See below for why the worker rides along here instead of its own deployment |
 | Postgres | **Neon** | You already named it |
-| Redis | **Upstash** | Works from any of the above with one TLS URL; not tied to whichever host runs the API |
+| Redis | **Upstash** | Still needed even with the worker in-process — BullMQ's queue lives in Redis regardless of who's consuming it |
 
-Railway works as a drop-in swap for Render — same two services (one with a
-public port, one without), see the note at the end.
+`apps/worker` exists as its own deployable app (used by the self-hosted Docker
+path in `DEPLOYMENT.md`, where a dedicated container costs nothing extra),
+but on managed platforms a *dedicated* background-worker service is either
+paid outright (Render: $7/mo minimum, no free tier) or billed separately
+enough to be its own thing to manage (Railway). Neither is worth it for a
+queue this small, so `http_server` runs the same consumer logic in its own
+process instead — one `EMBED_EMAIL_WORKER=true` env var, no second service,
+no second provider, no cross-provider Redis-URL mismatch to get wrong. See
+[`emailWorker.ts`](apps/http_server/src/emailWorker.ts) — it's the exact same
+job-processing logic as `apps/worker/src/index.ts`, just started from
+`index.ts` instead of deployed on its own. The flag defaults to **off**, so
+this doesn't change anything for the Docker or Render+Railway paths — it's
+purely additive.
+
+If you'd rather isolate the worker onto its own service anyway (more headroom
+if the queue ever gets busy, or you just prefer the separation), that's still
+fully supported — see the collapsed note at the end of §3 for the Railway or
+paid-Render version.
 
 ## Two code changes this deployment needed (already applied)
 
@@ -68,7 +83,7 @@ assumptions the code made about staying on one origin:
    project uses `ioredis`/BullMQ, which needs the Redis protocol one). That's
    `REDIS_URL` below.
 
-## 3. Render — `http_server` (Web Service)
+## 3. Render — `http_server` (Web Service, email worker included)
 
 New Web Service → connect the repo.
 
@@ -100,41 +115,61 @@ New Web Service → connect the repo.
   | `CORS_ORIGIN` | Your Vercel URL, e.g. `https://ncomputing.vercel.app` |
   | `NODE_ENV` | `production` |
   | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET` | Live-mode keys |
+  | `RESEND_API_KEY` | From resend.com/api-keys |
+  | `MAIL_FROM` | See §6 — placeholder until a domain is verified |
+  | `LEAD_NOTIFY_TO` | Internal inbox for new-lead alerts |
+  | `EMBED_EMAIL_WORKER` | `true` — starts the BullMQ consumer inside this same process ([`emailWorker.ts`](apps/http_server/src/emailWorker.ts)) instead of needing a separate worker deployment |
 
   Don't set `PORT` — Render injects it, and `index.ts` already reads
   `process.env.PORT`.
 
-Once deployed, note the public URL Render gives you (e.g.
-`https://ncomputing-api.onrender.com`) — you'll need it for §5 and §6. Point
-the Razorpay webhook (dashboard → Webhooks) at
-`https://<that-url>/api/payments/webhook` for the `payment.captured` event.
+Once deployed, check the logs for **both** `Server started on port ...` and
+`Email worker started in-process, listening on the email queue` — if only the
+first one shows up, `EMBED_EMAIL_WORKER` isn't set to exactly `true`.
 
-## 4. Render — `worker` (Background Worker)
+Note the public URL Render gives you (e.g. `https://ncomputing-api.onrender.com`)
+— you'll need it for §4 and §5. Point the Razorpay webhook (dashboard →
+Webhooks) at `https://<that-url>/api/payments/webhook` for the
+`payment.captured` event.
 
-New Background Worker → same repo. A Background Worker has no public URL and
-no health-check port, which matches `apps/worker` exactly — it only consumes
-the `email` queue in Redis.
+<details>
+<summary>Prefer a dedicated worker service instead? (Railway, or paid Render)</summary>
 
-- **Build Command** (same two fixes as the `http_server` command above):
-  ```bash
-  npm i -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=worker...
-  ```
-- **Start Command**: `pnpm --filter worker start`
-- **Environment**:
+Leave `EMBED_EMAIL_WORKER` unset on `http_server` and deploy `apps/worker` on
+its own — useful if the queue ever gets busy enough to want separate scaling,
+or you just prefer the isolation.
 
-  | Key | Value |
-  |---|---|
-  | `DATABASE_URL` | Same Neon string |
-  | `REDIS_URL` | Same Upstash string |
-  | `RESEND_API_KEY` | From resend.com/api-keys |
-  | `MAIL_FROM` | See §7 — placeholder until a domain is verified |
-  | `LEAD_NOTIFY_TO` | Internal inbox for new-lead alerts |
+**Railway** (usage-billed, no free/paid split like Render's):
+1. New Project → Deploy from GitHub repo → this repo.
+2. If Railway's monorepo picker offers to scope the service to one app
+   folder, skip it — set **Root Directory to `/`** (repo root) instead, so
+   the build can see `pnpm-workspace.yaml` and compile `@repo/db`/`@repo/types`
+   first via turbo. Railway's per-package auto-detection for this exact
+   pnpm+turbo shape has open bug reports — don't rely on it.
+3. Build Command: `npm i -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=worker...`
+   (Nixpacks has first-class corepack support, so §3's Render-specific
+   `corepack enable` failure doesn't apply here — same command anyway, since
+   it's already proven to work.)
+4. Start Command: `pnpm --filter worker start`
+5. Settings → Networking: leave empty — no domain, no port. That absence is
+   what makes it a background service on Railway.
+6. Variables: `DATABASE_URL` (same Neon string), `REDIS_URL` (**the exact
+   same** Upstash string `http_server` uses — a mismatch here means jobs
+   vanish into a queue nothing is listening to, with no error anywhere),
+   `RESEND_API_KEY`, `MAIL_FROM`, `LEAD_NOTIFY_TO`.
 
-Check Render's current pricing for Background Workers before committing —
-some platforms don't offer an always-on worker process on their free tier,
-since (unlike a Web Service) it can't be idled between requests.
+Check the logs for `Worker started, listening on the email queue` with
+**nothing else after it** — on Railway, that clean output (no port-scan
+noise) is what confirms it's configured as a background service correctly.
 
-## 5. Vercel — `web`
+**Render** (New → **Background Worker**, not Web Service — that mismatch is
+what causes a crash-loop, since a Web Service expects a bound port and a
+worker never opens one): same Build/Start commands as `http_server` above but
+with `--filter=worker...`, same variable list as the Railway table, minus
+`EMBED_EMAIL_WORKER`. $7/mo minimum, no free tier.
+</details>
+
+## 4. Vercel — `web`
 
 Import the repo, then in Project Settings:
 
@@ -161,7 +196,7 @@ Redeploy once `CORS_ORIGIN` on Render actually matches the Vercel URL Vercel
 assigns you (chicken-and-egg on the very first deploy — deploy once to get
 the URL, set `CORS_ORIGIN`, redeploy `http_server`).
 
-## 6. Verify
+## 5. Verify
 
 ```bash
 curl -I https://<render-http-server-url>/health   # -> 200
@@ -172,21 +207,17 @@ Then for real: open the Vercel URL, register an account, place a test order
 sales" lead form. Confirm login persists across a page reload (that's the
 cookie fix from §0 actually working) and that both emails arrive.
 
-## 7. Email — same caveat as the Docker guide
+## 6. Email — same caveat as the Docker guide
 
 Resend's shared `onboarding@resend.dev` sender only delivers to your own
 Resend account address. Verify a domain at resend.com/domains and point
 `MAIL_FROM` at it before expecting real customers to receive anything.
 
-## Using Railway instead of Render
+## Moving `http_server` to Railway too
 
-Railway's model is close enough that the settings translate directly:
-
-- `http_server` → a Railway service with the same build/start commands,
-  Railway auto-injects `PORT` the same way.
-- `worker` → a Railway service with the same build/start commands but **no
-  exposed port** (don't set one in Railway's networking tab) — that's what
-  makes it a background service instead of a web one.
-- Same environment variables in both cases.
-- Railway also offers its own Redis plugin (one click, gives you a
-  `REDIS_URL` directly) if you'd rather not add Upstash as a fourth vendor.
+If you'd rather run `http_server` (worker embedded, same as §3) on Railway
+instead of Render: same Build/Start commands, Railway auto-injects `PORT` the
+same way Render does, same environment variables including
+`EMBED_EMAIL_WORKER=true`. Railway also offers its own Redis plugin (one
+click, gives you a `REDIS_URL` directly) if you'd rather not add Upstash as a
+separate vendor on top.

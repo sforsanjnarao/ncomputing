@@ -9,6 +9,7 @@ import orderRoute from "./routes/order.routes";
 import paymentRoute from "./routes/payment.routes";
 import leadRoute from "./routes/lead.routes";
 import { apiLimiter } from "./rateLimit";
+import { startEmailWorker } from "./emailWorker";
 
 const app = express();
 
@@ -49,3 +50,7 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
+
+if (process.env.EMBED_EMAIL_WORKER === "true") {
+  startEmailWorker();
+}
