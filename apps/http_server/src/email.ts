@@ -12,7 +12,6 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 async function send(to: string, subject: string, html: string) {
   if (!resend) {
-
     console.log(
       `[email] RESEND_API_KEY not set — would have sent "${subject}" to ${to}`,
     );
@@ -64,7 +63,6 @@ export async function sendOrderConfirmation(order: OrderWithDetails) {
 
   await send(order.user.email, `Order confirmed — ${order.orderNumber}`, html);
 }
-
 
 function esc(value: string) {
   return value
@@ -118,7 +116,6 @@ function leadInternalAlert(lead: Lead) {
 }
 
 export async function sendLeadNotification(lead: Lead) {
-
   const results = await Promise.allSettled([
     send(
       lead.email,
