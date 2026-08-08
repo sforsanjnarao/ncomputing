@@ -14,9 +14,7 @@ const razorpay =
     ? new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET })
     : null;
 
-// Marks an order paid exactly once and emails the receipt. Both the browser
-// callback and the webhook funnel through here, so a duplicate call is a no-op
-// rather than a second email. Returns null when the reference is unknown.
+
 async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
   const order = await prisma.order.findUnique({ where: { razorpayOrderId } });
   if (!order) return null;
@@ -24,7 +22,12 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
   if (order.paymentStatus === PaymentStatus.PAID) {
     return prisma.order.findUniqueOrThrow({
       where: { id: order.id },
-      include: { items: { include: { product: true } }, user: true },
+      include: {
+        items: { include: { product: true } },
+        user: {
+          select: { id: true, name: true, email: true, organization: true },
+        },
+      },
     });
   }
 
@@ -36,7 +39,12 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
       status: OrderStatus.PROCESSING,
       razorpayPaymentId,
     },
-    include: { items: { include: { product: true } }, user: true },
+    include: {
+      items: { include: { product: true } },
+      user: {
+        select: { id: true, name: true, email: true, organization: true },
+      },
+    },
   });
 
   sendOrderConfirmation(updated).catch((err) =>
@@ -46,21 +54,17 @@ async function markPaid(razorpayOrderId: string, razorpayPaymentId: string) {
   return updated;
 }
 
-// Creates (or reuses) the Razorpay order the checkout widget opens. The amount
-// is read from our own database row, so the browser cannot influence what is
-// actually charged.
+
 export const createPayment = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: "unauthorized" });
 
   const parsed = CreatePaymentSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res
-      .status(400)
-      .json({
-        error: "Invalid request.",
-        details: parsed.error.flatten().fieldErrors,
-      });
+    return res.status(400).json({
+      error: "Invalid request.",
+      details: parsed.error.flatten().fieldErrors,
+    });
   }
   if (!razorpay)
     return res
@@ -80,12 +84,10 @@ export const createPayment = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "This order is already paid." });
     }
 
-    // Razorpay's API always takes the smallest currency unit (paise), no
-    // matter how we store the amount ourselves — converted here, once, right
-    // before it leaves our server.
+  
     const amountInPaise = Math.round(order.orderAmount * 100);
 
-    // Reuse the existing gateway order if the user reloaded the checkout page.
+    
     if (order.razorpayOrderId) {
       return res.status(200).json({
         keyId: RAZORPAY_KEY_ID,
@@ -124,12 +126,10 @@ export const createPayment = async (req: Request, res: Response) => {
 export const verifyPayment = async (req: Request, res: Response) => {
   const parsed = VerifyPaymentSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res
-      .status(400)
-      .json({
-        error: "Invalid request.",
-        details: parsed.error.flatten().fieldErrors,
-      });
+    return res.status(400).json({
+      error: "Invalid request.",
+      details: parsed.error.flatten().fieldErrors,
+    });
   }
   if (!RAZORPAY_KEY_SECRET)
     return res
@@ -164,8 +164,7 @@ export const verifyPayment = async (req: Request, res: Response) => {
   }
 };
 
-// Server-to-server confirmation. The browser callback can be lost (tab closed,
-// network dropped) — the webhook is what makes the flow reliable.
+
 export const paymentWebhook = async (req: Request, res: Response) => {
   if (!RAZORPAY_WEBHOOK_SECRET)
     return res.status(503).json({ error: "Webhook secret is not configured." });

@@ -1,4 +1,4 @@
-import { Lead, Order, OrderItem, Product, User } from "@repo/db";
+import { Lead, Order, OrderItem, Product } from "@repo/db";
 import { Resend } from "resend";
 import { formatInr } from "@repo/types";
 
@@ -21,7 +21,7 @@ async function send(to: string, subject: string, html: string) {
 
 type OrderWithDetails = Order & {
   items: (OrderItem & { product: Product })[];
-  user: User;
+  user: { name: string; email: string };
 };
 
 export async function sendOrderConfirmation(order: OrderWithDetails) {
