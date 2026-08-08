@@ -1,88 +1,123 @@
-# NComputing India — marketing site, ordering portal and admin dashboard
+# NComputing India — Platform & Portal
 
-A three-part project built around one NComputing product line: a marketing site that
-explains desktop virtualisation to a non-technical Indian buyer, an ordering portal with
-Razorpay checkout, and an internal dashboard for orders and leads.
+A complete web solution for NComputing India featuring a marketing site, ordering portal with Razorpay checkout, background email processing, lead capture with automatic visitor intent tracking, and an internal admin dashboard.
 
-This is a **Turborepo + pnpm** monorepo:
+---
 
-```
+## 🏗️ Repository Architecture
+
+This project is structured as a **Turborepo + pnpm monorepo**:
+
+```text
 ncomputing/
 ├── apps/
-│   ├── http_server/   Express + TypeScript API (layered: controllers/routes/zod/middleware)
-│   └── web/           Next.js 14 (App Router) + Tailwind
+│   ├── web/            Next.js 14 (App Router) + Tailwind CSS (Frontend)
+│   ├── http_server/    Express + TypeScript REST API (Backend)
+│   └── worker/         BullMQ background worker for email queues
 └── packages/
-    ├── db/                @repo/db — Prisma schema, generated client, pg-adapter singleton
-    ├── types/             @repo/types — shared constants + DTO types
-    ├── typescript-config/  @repo/typescript-config
-    └── eslint-config/      @repo/eslint-config
+    ├── db/             @repo/db — Prisma schema, PostgreSQL client & migrations
+    ├── types/          @repo/types — Shared TypeScript interfaces & DTOs
+    ├── typescript-config/
+    └── eslint-config/
 ```
 
-## Running it locally
+---
 
-You need Node 20.19+ (for `require(ESM)`) and a PostgreSQL database — Neon, or a local one
-via `docker compose up -d`.
+## ⚡ Quick Start (Local Setup)
+
+### Prerequisites
+- **Node.js**: `>= 20.19.0`
+- **pnpm**: `pnpm` package manager installed (`npm i -g pnpm`)
+- **PostgreSQL**: Local database or Neon connection string
+- **Redis**: Local Redis instance or Upstash URL (for background queues)
+
+### 1. Installation & Environment Setup
+
+Clone the repository and install dependencies:
 
 ```bash
 pnpm install
-
-# 1. Point the API and the db package at your database
-cp apps/http_server/.env.example apps/http_server/.env   # fill DATABASE_URL + JWT_SECRET
-cp packages/db/.env.example packages/db/.env             # same DATABASE_URL
-
-# 2. Build the shared packages and create the tables (no seed data)
-pnpm --filter @repo/db build
-pnpm --filter @repo/db db:push
-
-# 3. Run everything
-pnpm dev            # turbo runs http_server (:4000) and web (:3000)
 ```
 
-The web app reads `NEXT_PUBLIC_API_URL` (browser) and `API_URL` (server components);
-both default to `http://localhost:4000`. Copy `apps/web/.env.example` to
-`apps/web/.env.local` to override.
+Copy the example environment files:
 
-> The first admin is created by a direct DB change — registration always yields a `USER`.
+```bash
+cp apps/http_server/.env.example apps/http_server/.env
+cp apps/web/.env.example apps/web/.env.local
+cp packages/db/.env.example packages/db/.env
+```
 
-### Test payments
+*Update the `.env` files with your local PostgreSQL credentials, Redis URL, JWT Secret, and Razorpay Sandbox keys.*
 
-With Razorpay in test mode: card `4111 1111 1111 1111`, any future expiry, any CVV.
-To exercise the webhook locally, expose the API and point a Razorpay webhook at
-`https://<your-tunnel>/api/payments/webhook` for the `payment.captured` event.
+### 2. Database Initialization
 
-## How authentication works
+Generate the Prisma client and push the schema to your database:
 
-Two layers, deliberately:
+```bash
+pnpm --filter @repo/db build
+pnpm --filter @repo/db db:push
+```
 
-1. **Client route guards** — `apps/web/src/app/(protected)/layout.tsx` redirects anonymous
-   users away from `/account` and `/checkout`, and the admin layout sends non-admins away
-   from `/admin`. This is UX, not security.
-2. **`apps/http_server/src/middleware/protected.ts`** — `protectMiddleware` and
-   `requireRole('ADMIN')` guard every protected route, and controllers enforce ownership
-   (a `USER` can only read their own orders even with a valid token). This is the real
-   boundary; the API is reachable directly.
+Seed initial product data (optional):
 
-The API signs a JWT and sets it as an **httpOnly cookie** on its own origin. The browser
-calls the API directly with `credentials: "include"` (CORS allows the web origin), so the
-cookie travels on every request and client-side JavaScript can never read it. In
-production the cookie is `SameSite=None; Secure`, so `CORS_ORIGIN` must list the web origin.
+```bash
+pnpm --filter @repo/db seed
+```
 
-## Notes on a few decisions
+### 3. Run Development Servers
 
-- **Money is integer paise everywhere.** Floats are never used for currency.
-- **The server prices every order.** The browser sends product ids, quantities and option
-  ids; the API looks up what those cost. A tampered cart in localStorage achieves nothing.
-- **Orders are created before payment.** An abandoned checkout leaves a `PENDING` order
-  rather than no record at all.
-- **Payment confirmation is idempotent.** The browser callback and the Razorpay webhook
-  both funnel through one function, so a duplicate never sends a second receipt.
-- **Product marketing copy lives in `apps/web/src/content/why.ts`,** not the database.
+Start all applications (web app on `:3000`, API on `:4000`) simultaneously:
 
-## Deployment
+```bash
+pnpm dev
+```
 
-Two guides, pick one:
+---
 
-- [`DEPLOYMENT.md`](DEPLOYMENT.md) — self-hosted, one Docker host running
-  everything (`docker-compose.prod.yml`), Caddy for TLS.
-- [`DEPLOYMENT_CLOUD.md`](DEPLOYMENT_CLOUD.md) — managed platforms: Vercel
-  (web), Render/Railway (API + worker), Neon (Postgres), Upstash (Redis).
+## ✨ Key Features
+
+- **Marketing Website**: Includes interactive savings calculator, product comparisons, and responsive design.
+- **Ordering Portal**: Cart management, server-side price validation (paise precision), checkout flow, and **Razorpay** sandbox payment integration.
+- **Visitor Intent Tracking & CRM**: Anonymous visitor cookie tracking (page views, cart additions, checkout steps) with automatic lead scoring and contact prompts.
+- **Admin Dashboard**: Real-time order management, status updates (Pending, Processing, Shipped, Delivered), and lead tracking with visitor activity history.
+- **Asynchronous Email Queue**: **BullMQ + Redis + Resend** for non-blocking email receipts and lead notifications.
+
+---
+
+## 🤝 Contribution Guide
+
+We welcome contributions! Please follow these guidelines to get started:
+
+### 1. Branch Naming Convention
+- `feat/feature-name` for new features
+- `fix/bug-description` for bug fixes
+- `docs/update-info` for documentation changes
+
+### 2. Development Workflow
+1. Fork the repo and create a new branch from `main`.
+2. Ensure code is typed cleanly and follows existing workspace patterns.
+3. Keep code clean and self-explanatory.
+4. Verify local build and linting before committing:
+
+```bash
+pnpm build
+pnpm lint
+```
+
+### 3. Submitting Pull Requests
+- Open a PR against the `main` branch.
+- Include a clear title and description explaining what changed and why.
+- Provide screenshots or recordings for UI changes.
+
+---
+
+## 🚀 Deployment
+
+- **Cloud Platform Setup**: See [`DEPLOYMENT_CLOUD.md`](DEPLOYMENT_CLOUD.md) for deploying to Vercel (web), Render/Railway (API & worker), and Neon (PostgreSQL).
+- **Self-Hosted Docker**: See [`DEPLOYMENT.md`](DEPLOYMENT.md) for single-instance deployment using Docker Compose & Caddy.
+
+---
+
+## 📄 License
+
+This repository is maintained for NComputing India assessment and development purposes.
