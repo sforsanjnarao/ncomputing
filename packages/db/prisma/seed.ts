@@ -9,25 +9,25 @@ async function main() {
     update: {},
     create: {
       name: "Admin",
-      email: "admin@ncomputing.in",
-      password: await bcrypt.hash("Admin@12345", 10),
+      email: "verify-admin@ncomputing.in",
+      password: await bcrypt.hash("VerifyAdmin@12345", 10),
       role: Role.ADMIN,
     },
   });
 
-  await prisma.user.upsert({
-    where: { email: "user@ncomputing.in" },
-    update: {},
-    create: {
-      name: "Demo User",
-      email: "user@ncomputing.in",
-      password: await bcrypt.hash("User@12345", 10),
-      role: Role.USER,
-    },
-  });
+  // await prisma.user.upsert({
+  //   where: { email: "user@ncomputing.in" },
+  //   update: {},
+  //   create: {
+  //     name: "Demo User",
+  //     email: "user@ncomputing.in",
+  //     password: await bcrypt.hash("User@12345", 10),
+  //     role: Role.USER,
+  //   },
+  // });
 
   console.log("Seeded admin@ncomputing.in / Admin@12345");
-  console.log("Seeded user@ncomputing.in / User@12345");
+  // console.log("Seeded user@ncomputing.in / User@12345");
 
   await seedProducts(prisma);
 }
