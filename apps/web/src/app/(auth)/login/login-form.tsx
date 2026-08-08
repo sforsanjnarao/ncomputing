@@ -76,8 +76,8 @@ export function LoginForm() {
 
       <div className="rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
         <p className="font-medium text-slate-700">Demo accounts</p>
-        <p className="mt-1">Admin — admin@ncomputing.in / Admin@12345</p>
-        <p>Customer — user@ncomputing.in / User@12345</p>
+        <p className="mt-1">Admin — verify-admin@ncomputing.in / VerifyAdmin@12345</p>
+        
       </div>
     </form>
   );
