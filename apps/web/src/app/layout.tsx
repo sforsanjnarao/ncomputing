@@ -5,6 +5,8 @@ import { Providers } from "./Providers";
 import { WebVitals } from "./web-vitals";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { VisitorTracker } from "@/components/visitor-tracker";
+import { AutoLeadPrompt } from "@/components/auto-lead-prompt";
 
 // Electrolize is reserved for the big hero-level h1 titles only — a
 // geometric, techy face used sparingly for impact. It ships one weight, so
@@ -53,6 +55,8 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen flex-col font-sans">
         <WebVitals />
+        <VisitorTracker />
+        <AutoLeadPrompt />
         <Providers>
           <SiteHeader />
           <main className="flex-1">{children}</main>

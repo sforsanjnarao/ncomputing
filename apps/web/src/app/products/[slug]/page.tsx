@@ -7,6 +7,7 @@ import { WHY_CONTENT } from "@/content/why";
 import type { Product } from "@/lib/types";
 import { ProductConfigurator } from "@/components/product-configurator";
 import { LeadCta } from "@/components/lead-cta";
+import { TrackProductView } from "@/components/track-product-view";
 
 type PageProps = { params: { slug: string } };
 
@@ -37,6 +38,7 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <div className="container-page py-10 sm:py-14">
+      <TrackProductView slug={product.slug} />
       <nav className="text-sm text-slate-500">
         <Link href="/products" className="hover:text-ink">
           Products

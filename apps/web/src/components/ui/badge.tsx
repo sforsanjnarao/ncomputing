@@ -1,6 +1,11 @@
 import { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
-import type { LeadStatus, OrderStatus, PaymentStatus } from "@/lib/types";
+import type {
+  LeadScoreLabel,
+  LeadStatus,
+  OrderStatus,
+  PaymentStatus,
+} from "@/lib/types";
 
 type Tone = "neutral" | "blue" | "green" | "amber" | "red";
 
@@ -52,6 +57,15 @@ const leadTones: Record<LeadStatus, Tone> = {
   CLOSED: "neutral",
 };
 
+// Weak/Medium/Strong is about pre-contact browsing behaviour, not where a
+// lead sits in the sales process — a deliberately different scale from
+// leadTones above, so the two badges never get confused for one another.
+const scoreTones: Record<LeadScoreLabel, Tone> = {
+  WEAK: "neutral",
+  MEDIUM: "amber",
+  STRONG: "green",
+};
+
 const titleCase = (value: string) =>
   value.charAt(0) + value.slice(1).toLowerCase();
 
@@ -65,4 +79,8 @@ export const PaymentStatusBadge = ({ status }: { status: PaymentStatus }) => (
 
 export const LeadStatusBadge = ({ status }: { status: LeadStatus }) => (
   <Badge tone={leadTones[status]}>{titleCase(status)}</Badge>
+);
+
+export const LeadScoreBadge = ({ label }: { label: LeadScoreLabel }) => (
+  <Badge tone={scoreTones[label]}>{titleCase(label)}</Badge>
 );

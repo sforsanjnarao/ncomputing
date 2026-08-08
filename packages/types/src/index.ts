@@ -18,6 +18,13 @@ export type OrderStatus =
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 export type LeadType = "DEMO" | "SALES" | "PRICING";
 export type LeadStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "CLOSED";
+export type VisitorEventType =
+  | "PAGE_VIEW"
+  | "PRODUCT_VIEW"
+  | "ADD_TO_CART"
+  | "CHECKOUT_STARTED"
+  | "LEAD_SUBMITTED";
+export type LeadScoreLabel = "WEAK" | "MEDIUM" | "STRONG";
 
 export const ORDER_STATUSES: OrderStatus[] = [
   "PENDING",
@@ -116,4 +123,11 @@ export type Lead = {
   message: string | null;
   status: LeadStatus;
   createdAt: string;
+  // Present only from the admin list endpoint, and only when this lead has a
+  // visitorId with tracked browsing history to score — absent (not zero) for
+  // leads with nothing to go on, so the UI can tell "no signal" from "weak
+  // signal" apart.
+  score?: number;
+  scoreLabel?: LeadScoreLabel;
+  activity?: { type: VisitorEventType; count: number }[];
 };

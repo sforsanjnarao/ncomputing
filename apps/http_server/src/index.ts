@@ -8,8 +8,10 @@ import productRoute from "./routes/product.routes";
 import orderRoute from "./routes/order.routes";
 import paymentRoute from "./routes/payment.routes";
 import leadRoute from "./routes/lead.routes";
+import trackRoute from "./routes/visitor.routes";
 import { apiLimiter } from "./rateLimit";
 import { startEmailWorker } from "./emailWorker";
+import { visitorMiddleware } from "./middleware/visitor";
 
 const app = express();
 
@@ -39,12 +41,14 @@ app.use(cookieParser());
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api", apiLimiter);
+app.use("/api", visitorMiddleware);
 
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/leads", leadRoute);
+app.use("/api/track", trackRoute);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

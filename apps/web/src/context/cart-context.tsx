@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { Product } from "@/lib/types";
+import { track } from "@/lib/track";
 
 const STORAGE_KEY = "ncomputing.cart.v1";
 
@@ -63,6 +64,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback(
     (product: Product, quantity: number, seats?: number) => {
+      track("ADD_TO_CART", { productSlug: product.slug });
       setLines((current) => {
         const existing = current.find((line) => line.productId === product.id);
         if (existing) {

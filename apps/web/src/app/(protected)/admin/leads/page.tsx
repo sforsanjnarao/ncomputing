@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowUpDown, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import {
@@ -9,12 +9,35 @@ import {
   type Lead,
   type LeadStatus,
   type LeadType,
+  type VisitorEventType,
 } from "@/lib/types";
 import { Card, CardBody } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/field";
-import { Badge, LeadStatusBadge } from "@/components/ui/badge";
+import { Badge, LeadScoreBadge, LeadStatusBadge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
+
+const ACTIVITY_LABELS: Record<VisitorEventType, string> = {
+  PAGE_VIEW: "page view",
+  PRODUCT_VIEW: "product view",
+  ADD_TO_CART: "cart add",
+  CHECKOUT_STARTED: "checkout started",
+  LEAD_SUBMITTED: "form submitted",
+};
+
+// Busiest signal first, and skip the noisiest/least informative one (plain
+// page views) once there's anything more specific to show instead.
+function formatActivity(activity: Lead["activity"]) {
+  if (!activity || activity.length === 0) return "No tracked activity";
+  const meaningful = activity.filter((a) => a.type !== "PAGE_VIEW");
+  const shown = (meaningful.length > 0 ? meaningful : activity)
+    .slice()
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
+  return shown
+    .map((a) => `${a.count} ${ACTIVITY_LABELS[a.type]}${a.count > 1 ? "s" : ""}`)
+    .join(", ");
+}
 
 const LEAD_TYPES: LeadType[] = ["DEMO", "SALES", "PRICING"];
 
@@ -36,6 +59,10 @@ export default function AdminLeadsPage() {
   const [status, setStatus] = useState<LeadStatus | "">("");
   const [type, setType] = useState<LeadType | "">("");
   const [page, setPage] = useState(1);
+  // Sorts only the currently loaded page — score isn't a database column
+  // (it's computed from tracked events per request), so this isn't a global
+  // sort across every lead, just this page's 25.
+  const [sortByScore, setSortByScore] = useState(false);
 
   const load = useCallback(async () => {
     setError(false);
@@ -82,6 +109,11 @@ export default function AdminLeadsPage() {
     );
   }
 
+  const visibleLeads = useMemo(() => {
+    if (!sortByScore) return leads;
+    return [...leads].sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+  }, [leads, sortByScore]);
+
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight">Leads</h1>
@@ -126,12 +158,21 @@ export default function AdminLeadsPage() {
               </option>
             ))}
           </Select>
+          <Button
+            variant={sortByScore ? "primary" : "secondary"}
+            size="md"
+            onClick={() => setSortByScore((current) => !current)}
+            className="sm:w-auto"
+          >
+            <ArrowUpDown className="h-4 w-4" />
+            Sort by score
+          </Button>
         </CardBody>
       </Card>
 
       <Card className="mt-4 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[840px] text-sm">
+          <table className="w-full min-w-[960px] text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
               <tr>
                 <th className="p-4 font-medium">Received</th>
@@ -140,19 +181,20 @@ export default function AdminLeadsPage() {
                 <th className="p-4 font-medium">Organization</th>
                 <th className="p-4 font-medium">Seats</th>
                 <th className="p-4 font-medium">Message</th>
+                <th className="p-4 font-medium">Interest</th>
                 <th className="p-4 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-500">
+                  <td colSpan={8} className="p-8 text-center text-slate-500">
                     Loading…
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center">
+                  <td colSpan={8} className="p-8 text-center">
                     <p className="text-red-600">Could not load leads.</p>
                     <Button
                       variant="secondary"
@@ -166,12 +208,12 @@ export default function AdminLeadsPage() {
                 </tr>
               ) : leads.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-500">
+                  <td colSpan={8} className="p-8 text-center text-slate-500">
                     No leads match those filters.
                   </td>
                 </tr>
               ) : (
-                leads.map((lead) => (
+                visibleLeads.map((lead) => (
                   <tr key={lead.id} className="align-top hover:bg-slate-50">
                     <td className="p-4 text-slate-600">
                       {formatDate(lead.createdAt)}
@@ -197,6 +239,20 @@ export default function AdminLeadsPage() {
                     </td>
                     <td className="p-4 max-w-xs text-slate-600">
                       {lead.message ?? "—"}
+                    </td>
+                    <td className="p-4 max-w-[14rem]">
+                      {lead.scoreLabel ? (
+                        <>
+                          <LeadScoreBadge label={lead.scoreLabel} />
+                          <p className="mt-1 text-xs text-slate-500">
+                            {formatActivity(lead.activity)}
+                          </p>
+                        </>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          No tracked activity
+                        </span>
+                      )}
                     </td>
                     <td className="p-4">
                       <Select

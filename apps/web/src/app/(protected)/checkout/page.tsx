@@ -6,6 +6,7 @@ import { Lock } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import { api, ApiError } from "@/lib/api";
+import { track } from "@/lib/track";
 import { formatInr } from "@/lib/format";
 import {
   loadRazorpayScript,
@@ -68,6 +69,9 @@ export default function CheckoutPage() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => setHydrated(true), []);
+  useEffect(() => {
+    track("CHECKOUT_STARTED");
+  }, []);
 
   // The cart lives in localStorage, so it is only knowable after hydration.
   useEffect(() => {

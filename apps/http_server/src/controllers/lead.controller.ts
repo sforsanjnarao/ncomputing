@@ -6,6 +6,7 @@ import {
   UpdateLeadSchema,
 } from "../zod/lead.zod";
 import { queueLeadNotification } from "../queue";
+import { scoreVisitors } from "../leadScoring";
 
 const PAGE_SIZE = 25;
 
@@ -21,10 +22,25 @@ export const createLead = async (req: Request, res: Response) => {
   }
 
   try {
-    const lead = await prisma.lead.create({ data: parsed.data });
+    const lead = await prisma.lead.create({
+      data: { ...parsed.data, visitorId: req.visitorId },
+    });
 
-    // A failed notification must not fail the visitor's form submission — the
-    // lead is already safely in the database.
+    if (req.visitorId) {
+      // Best-effort, like the notification below — a visitor's submission
+      // must never fail because the activity log had a hiccup.
+      prisma.visitorEvent
+        .create({
+          data: {
+            visitorId: req.visitorId,
+            type: "LEAD_SUBMITTED",
+            productSlug: lead.productSlug,
+          },
+        })
+        .catch((err) => console.error(err));
+    }
+
+
     queueLeadNotification(lead.id).catch((err) => console.error(err));
 
     return res.status(201).json({ lead });
@@ -67,9 +83,28 @@ export const adminListLeads = async (req: Request, res: Response) => {
       }),
       prisma.lead.count({ where }),
     ]);
-    return res
-      .status(200)
-      .json({ leads, total, page: parsed.data.page, pageSize: PAGE_SIZE });
+
+    const visitorIds = leads
+      .map((lead) => lead.visitorId)
+      .filter((id): id is string => Boolean(id));
+    const scores = await scoreVisitors(visitorIds);
+
+    const leadsWithScore = leads.map((lead) => {
+      const scored = lead.visitorId ? scores.get(lead.visitorId) : undefined;
+      return {
+        ...lead,
+        score: scored?.score,
+        scoreLabel: scored?.scoreLabel,
+        activity: scored?.activity,
+      };
+    });
+
+    return res.status(200).json({
+      leads: leadsWithScore,
+      total,
+      page: parsed.data.page,
+      pageSize: PAGE_SIZE,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "something went wrong" });
