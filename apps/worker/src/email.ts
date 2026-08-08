@@ -5,7 +5,7 @@ import { formatInr } from "@repo/types";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const MAIL_FROM =
   process.env.MAIL_FROM || "NComputing India <onboarding@resend.dev>";
-.
+
 const LEAD_NOTIFY_TO = process.env.LEAD_NOTIFY_TO;
 
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
