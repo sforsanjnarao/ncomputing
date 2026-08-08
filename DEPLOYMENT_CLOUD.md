@@ -33,6 +33,12 @@ assumptions the code made about staying on one origin:
    [`http_server/src/redis.ts`](apps/http_server/src/redis.ts) and
    [`worker/src/redis.ts`](apps/worker/src/redis.ts) now use `REDIS_URL` when
    it's set, falling back to `REDIS_HOST`/`REDIS_PORT` for local dev.
+3. **Root `package.json` had no upper bound on Node** (`>=18`). Left alone,
+   Render picked the newest available runtime — 26.7.0, a line Prisma
+   explicitly hasn't signed off on (`Prisma only supports Node.js versions
+   20.19+, 22.12+, 24.0+`) and nothing in this repo has ever run on. Pinned to
+   `>=20.19.0 <21.0.0` — the line the Docker images (`node:20-alpine`) and
+   local dev already use.
 
 ## 1. Neon (Postgres)
 
@@ -70,11 +76,19 @@ New Web Service → connect the repo.
   build needs to see `pnpm-workspace.yaml`).
 - **Build Command**:
   ```bash
-  corepack enable && pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=http_server...
+  npm i -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=http_server...
   ```
   (`--filter=http_server...` also builds `@repo/db` and `@repo/types`, its
   workspace dependencies — same command the existing `docker/Dockerfile.http`
-  uses.)
+  uses. Two Render-specific things baked into this command, not obvious from
+  reading it: `corepack enable` fails here — Render's build filesystem has
+  `/usr/bin` read-only, so corepack can't write its `pnpm` symlink, hence
+  `npm i -g pnpm` instead. And Render sets `NODE_ENV=production` for the
+  build step, which makes pnpm skip `devDependencies` — silently dropping
+  `turbo` itself, since it's a devDependency. `NODE_ENV=development` for just
+  the install step fixes that without touching the app's actual runtime
+  `NODE_ENV`, which Render sets separately and which the app correctly
+  depends on.)
 - **Start Command**: `pnpm --filter http_server start`
 - **Environment**:
 
@@ -101,9 +115,9 @@ New Background Worker → same repo. A Background Worker has no public URL and
 no health-check port, which matches `apps/worker` exactly — it only consumes
 the `email` queue in Redis.
 
-- **Build Command**:
+- **Build Command** (same two fixes as the `http_server` command above):
   ```bash
-  corepack enable && pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=worker...
+  npm i -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && pnpm exec turbo run build --filter=worker...
   ```
 - **Start Command**: `pnpm --filter worker start`
 - **Environment**:
@@ -133,6 +147,9 @@ Import the repo, then in Project Settings:
   ```bash
   cd ../.. && pnpm exec turbo run build --filter=web...
   ```
+  Vercel's own pnpm install step doesn't hit the `NODE_ENV=production` /
+  missing-`turbo` problem from §3 — if it ever does, prefix with
+  `NODE_ENV=development pnpm install --frozen-lockfile &&` the same way.
 - **Environment Variables**:
 
   | Key | Value |
