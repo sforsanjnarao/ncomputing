@@ -37,13 +37,13 @@ export function ProductCard({ product }: { product: Product }) {
             framed before a spec sheet means anything to them. */}
         <div className="mt-5 flex flex-col gap-2">
           <Link
-            href={`/products/${product.slug}/why`}
+            href={`/products/${product.slug}`}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-700 px-5 text-sm font-medium text-white hover:bg-brand-800"
           >
             BUY <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            href={`/products/${product.slug}`}
+            href={`/products/${product.slug}/why`}
             className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 px-5 text-sm font-medium hover:bg-slate-50"
           >
             Why this one?
