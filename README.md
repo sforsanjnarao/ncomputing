@@ -80,7 +80,9 @@ production the cookie is `SameSite=None; Secure`, so `CORS_ORIGIN` must list the
 
 ## Deployment
 
-`docker-compose.prod.yml` builds and runs `postgres + http_server + web` (see
-`docker/Dockerfile.http` and `docker/Dockerfile.web`). Set `DOMAIN`, `JWT_SECRET`, the
-Postgres credentials, and the Razorpay/Resend keys in the environment. `CORS_ORIGIN` /
-`NEXT_PUBLIC_API_URL` must point at the public domain.
+Two guides, pick one:
+
+- [`DEPLOYMENT.md`](DEPLOYMENT.md) — self-hosted, one Docker host running
+  everything (`docker-compose.prod.yml`), Caddy for TLS.
+- [`DEPLOYMENT_CLOUD.md`](DEPLOYMENT_CLOUD.md) — managed platforms: Vercel
+  (web), Render/Railway (API + worker), Neon (Postgres), Upstash (Redis).
