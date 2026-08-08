@@ -6,6 +6,7 @@ import type { Product } from "@/lib/types";
 import { ButtonLink } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { LeadCta } from "@/components/lead-cta";
+import { ComparisonTable } from "@/components/comparison-table";
 
 // Below the fold and interactive-only — its JS ships in a separate chunk
 // instead of the initial homepage bundle.
@@ -34,6 +35,37 @@ const PAIN_POINTS = [
     title: "They all age at once",
     body: "Bought together, obsolete together. Four years later the entire bill arrives a second time.",
   },
+];
+
+const TESTIMONIALS = [
+  {
+    quote:
+      "We used to have someone whose whole job was reimaging machines. Now there's one host to patch, and a new seat request gets closed the same day.",
+    name: "Operations Head",
+    role: "Retail chain, 12 branches",
+  },
+  {
+    quote:
+      "The electricity savings alone paid for the RX420s within the first year. The hardware savings on top of that was the actual surprise.",
+    name: "Administrator",
+    role: "Private school network",
+  },
+  {
+    quote:
+      "Our support floor doubled in headcount without doubling the server room. That was the whole pitch, and it held up in practice.",
+    name: "IT Manager",
+    role: "BPO / customer support centre",
+  },
+];
+
+
+const COMPATIBLE_PLATFORMS = [
+  "Microsoft AVD",
+  "Windows 365",
+  "Citrix",
+  "Omnissa Horizon",
+  "RDS",
+  "VERDE VDI",
 ];
 
 export default async function HomePage() {
@@ -151,6 +183,73 @@ export default async function HomePage() {
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison — the most persuasive way to explain something unfamiliar
+          is against something the reader already understands. */}
+      <section className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
+        <div className="container-page">
+          <div className="max-w-2xl">
+            <p className="eyebrow">Side by side</p>
+            <h2 className="heading-2 mt-3">
+              Compared to what you already know.
+            </h2>
+            <p className="lead mt-4">
+              Same numbers the calculator above uses — nothing here is a
+              separate claim.
+            </p>
+          </div>
+          <ComparisonTable />
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="section">
+        <div className="container-page">
+          <div className="max-w-2xl">
+            <p className="eyebrow">What it looks like in practice</p>
+            <h2 className="heading-2 mt-3">
+              From people running rooms like yours.
+            </h2>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {TESTIMONIALS.map((item) => (
+              <figure
+                key={item.name}
+                className="flex flex-col rounded-2xl border border-slate-200 p-6"
+              >
+                <blockquote className="flex-1 text-slate-700">
+                  &ldquo;{item.quote}&rdquo;
+                </blockquote>
+                <figcaption className="mt-4 border-t border-slate-100 pt-4 text-sm">
+                  <span className="font-semibold text-ink">{item.name}</span>
+                  <span className="block text-slate-500">{item.role}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Compatibility — real specification data, not a certification claim,
+          hence "works with" rather than "official partner." */}
+      <section className="border-t border-slate-200 py-12">
+        <div className="container-page">
+          <p className="text-center text-sm font-medium text-slate-500">
+            Works with the platforms you already run
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {COMPATIBLE_PLATFORMS.map((platform) => (
+              <span
+                key={platform}
+                className="text-sm font-semibold tracking-wide text-slate-400"
+              >
+                {platform}
+              </span>
             ))}
           </div>
         </div>

@@ -4,26 +4,7 @@ import { useMemo, useState } from "react";
 import { formatInr } from "@/lib/format";
 import { Card, CardBody } from "@/components/ui/card";
 import { LeadDialog } from "@/components/lead-dialog";
-
-/**
- * Every number below is a stated assumption rather than a magic constant, and
- * they are printed under the result so a school principal can check them
- * against their own quotes. A calculator nobody can audit persuades nobody.
- */
-const ASSUMPTIONS = {
-  pcCost: 42_000, // for a business desktop PC
-  hostCost: 65_000, // for a server that comfortably drives 10 seats
-  seatsPerHost: 10,
-  devicePrice: 28_900, // for an RX420, which serves 2 seats
-  seatsPerDevice: 2,
-  pcWatts: 110,
-  hostWatts: 250,
-  deviceWattsPerSeat: 5,
-  hoursPerDay: 6,
-  daysPerYear: 250,
-  years: 5,
-  rupeesPerKwh: 8,
-};
+import { ASSUMPTIONS } from "@/content/pricing-assumptions";
 
 function electricityCost(watts: number) {
   const kwh =
